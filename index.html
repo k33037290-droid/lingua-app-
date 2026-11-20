@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LinguaPro Mini App</title>
+    <script src="https://telegram.org"></script>
+    <style>
+        :root {
+            --bg: #131f24;
+            --card: #1f2f37;
+            --border: #37464f;
+            --primary: #58cc02;
+            --primary-shadow: #46a302;
+            --blue: #1cb0f6;
+            --blue-shadow: #1899d6;
+            --gold: #ffc800;
+            --gold-shadow: #e5a500;
+            --red: #ff4b4b;
+            --text: #ffffff;
+            --muted: #afafaf;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 2px solid var(--border); background: var(--bg); }
+        .stat { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 16px; }
+        .stat.streak { color: #ff9600; }
+        .stat.xp { color: var(--gold); }
+        .stat.hearts { color: var(--red); }
+
+        .content { flex: 1; overflow-y: auto; padding: 20px 18px 90px; display: flex; flex-direction: column; }
+        .tab { display: none; flex-direction: column; flex: 1; }
+        .tab.active { display: flex; }
+
+        .progress-wrap { width: 100%; height: 14px; background: var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 24px; }
+        .progress-bar { height: 100%; width: 20%; background: var(--primary); transition: width 0.3s ease; border-radius: 10px; }
+
+        .q-title { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; }
+        .q-box { background: var(--card); border: 2px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .q-text { font-size: 20px; font-weight: 700; line-height: 1.35; }
+        .audio-btn { background: var(--blue); border: none; border-radius: 14px; width: 48px; height: 48px; font-size: 22px; cursor: pointer; box-shadow: 0 4px 0 var(--blue-shadow); flex-shrink: 0; }
+        .audio-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--blue-shadow); }
+
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .opt-btn { background: var(--card); color: var(--text); border: 2px solid var(--border); border-bottom-width: 5px; border-radius: 16px; padding: 16px; font-size: 17px; font-weight: 700; text-align: left; cursor: pointer; transition: 0.1s; }
+        .opt-btn:active { transform: translateY(3px); border-bottom-width: 2px; }
+        .opt-btn.correct { background: #1e3b17; border-color: var(--primary); color: var(--primary); }
+        .opt-btn.wrong { background: #3b1717; border-color: var(--red); color: var(--red); }
+
+        .feedback { position: fixed; bottom: 70px; left: 0; right: 0; padding: 18px; background: var(--card); border-top: 2px solid var(--border); display: none; flex-direction: column; gap: 12px; z-index: 20; }
+        .feedback.show { display: flex; }
+        .fb-title { font-size: 19px; font-weight: 800; }
+        .btn-main { width: 100%; padding: 15px; border: none; border-radius: 16px; font-size: 17px; font-weight: 800; text-transform: uppercase; cursor: pointer; color: #fff; background: var(--primary); box-shadow: 0 4px 0 var(--primary-shadow); }
+        .btn-main:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--primary-shadow); }
+        .btn-vip { background: var(--gold); color: #131f24; box-shadow: 0 4px 0 var(--gold-shadow); }
+
+        .shop-card { background: var(--card); border: 2px solid var(--border); border-radius: 18px; padding: 18px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+        .shop-info h3 { font-size: 18px; margin-bottom: 4px; }
+        .shop-info p { font-size: 13px; color: var(--muted); line-height: 1.4; }
+        .buy-btn { background: var(--gold); color: #131f24; border: none; border-radius: 12px; padding: 10px 14px; font-weight: 800; font-size: 15px; box-shadow: 0 4px 0 var(--gold-shadow); cursor: pointer; white-space: nowrap; }
+        
+        .leader-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: var(--card); border: 2px solid var(--border); border-radius: 14px; margin-bottom: 10px; font-weight: 700; }
+        .leader-row.me { border-color: var(--blue); background: #182f3d; }
+
+        .nav { position: fixed; bottom: 0; left: 0; right: 0; height: 68px; background: var(--bg); border-top: 2px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 30; }
+        .nav-item { background: none; border: none; color: var(--muted); font-size: 12px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+        .nav-item span { font-size: 22px; }
+        .nav-item.active { color: var(--blue); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="stat streak">🔥 <span id="streak-val">1</span></div>
+        <div class="stat xp">⚡ <span id="xp-val">0</span> XP</div>
+        <div class="stat hearts">❤️ <span id="hearts-val">3</span></div>
+    </div>
+
+    <div class="content">
+        <div id="tab-learn" class="tab active">
+            <div class="progress-wrap"><div class="progress-bar" id="prog-bar"></div></div>
+            <div id="lesson-area">
+                <div class="q-title" id="q-level">Уровень 1 • База</div>
+                <div class="q-box">
+                    <div class="q-text" id="q-text">Загрузка...</div>
+                    <button class="audio-btn" onclick="speakWord()">🔊</button>
+                </div>
+                <div class="options" id="options-box"></div>
+            </div>
+        </div>
+
+        <div id="tab-shop" class="tab">
+            <h2 style="margin-bottom: 16px;">🛒 Магазин бустов</h2>
+            <div class="shop-card">
+                <div class="shop-info">
+                    <h3>👑 VIP-подписка (30 дн.)</h3>
+                    <p>Бесконечные жизни ❤️ и доступ к секретным урокам со сленгом.</p>
+                </div>
+                <button class="buy-btn" onclick="buyItem('vip')">50 ⭐️</button>
+            </div>
+            <div class="shop-card">
+                <div class="shop-info">
+                    <h3>❄️ Заморозка стрика</h3>
+                    <p>Сохранит ударный режим 🔥, если пропустишь день занятий.</p>
+                </div>
+                <button class="buy-btn" onclick="buyItem('freeze')">15 ⭐️</button>
+            </div>
+            <div class="shop-card">
+                <div class="shop-info">
+                    <h3>❤️ Полные жизни</h3>
+                    <p>Мгновенно восстанавливает запас до 3 сердечек.</p>
+                </div>
+                <button class="buy-btn" onclick="buyItem('hearts')">10 ⭐️</button>
+            </div>
+        </div>
+
+        <div id="tab-rank" class="tab">
+            <h2 style="margin-bottom: 16px;">🏆 Бронзовая лига</h2>
+            <div class="leader-row"><span>🥇 Alex_Pro</span><span>420 XP</span></div>
+            <div class="leader-row"><span>🥈 Maria_Eng</span><span>310 XP</span></div>
+            <div class="leader-row"><span>🥉 Max_Dev</span><span>190 XP</span></div>
+            <div class="leader-row me"><span>👤 Ты (<span id="user-name">Ученик</span>)</span><span id="my-rank-xp">0 XP</span></div>
+        </div>
+    </div>
+
+    <div class="feedback" id="feedback-box">
+        <div class="fb-title" id="fb-title">✅ Отлично!</div>
+        <button class="btn-main" onclick="nextQuestion()">Продолжить</button>
+    </div>
+
+    <div class="nav">
+        <button class="nav-item active" onclick="switchTab('learn', this)"><span>🦉</span>Учиться</button>
+        <button class="nav-item" onclick="switchTab('rank', this)"><span>🏆</span>Лига</button>
+        <button class="nav-item" onclick="switchTab('shop', this)"><span>🛒</span>Магазин</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        const user = tg.initDataUnsafe?.user;
+        if (user && user.first_name) {
+            document.getElementById('user-name').innerText = user.first_name;
+        }
+
+        const questions = [
+            { level: "Уровень 1 • База", q: "Как переводится 'Apple'?", speak: "Apple", opts: ["Яблоко", "Груша", "Банан", "Апельсин"], ans: 0, vip: false },
+            { level: "Уровень 1 • Фразы", q: "Переведи: 'I am a programmer'", speak: "I am a programmer", opts: ["Я учитель", "Я программист", "Он врач", "Мы студенты"], ans: 1, vip: false },
+            { level: "Уровень 2 • Работа", q: "Переведи: 'She works from home'", speak: "She works from home", opts: ["Она идет домой", "Она работает из дома", "У нее есть дом", "Он строит дом"], ans: 1, vip: false },
+            { level: "Уровень 2 • Слова", q: "Что означает 'Success'?", speak: "Success", opts: ["Удача", "Успех", "Работа", "Деньги"], ans: 1, vip: false },
+            { level: "👑 VIP Уровень • Сленг", q: "Что означает идиома 'Piece of cake'?", speak: "Piece of cake", opts: ["Кусок торта", "Пара пустяков / очень легко", "Сложная задача", "Время обеда"], ans: 1, vip: true }
+        ];
+
+        let state = {
+            xp: Number(localStorage.getItem('xp') || 0),
+            hearts: Number(localStorage.getItem('hearts') ?? 3),
+            streak: Number(localStorage.getItem('streak') || 1),
+            isVip: localStorage.getItem('isVip') === 'true',
+            qIdx: 0
