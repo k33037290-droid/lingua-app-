@@ -537,10 +537,14 @@ function spinWheel(type){
   var pool=WHEELS[type],rnd=Math.random()*100,sum=0,winIdx=0;
   for(var i=0;i<pool.length;i++){sum+=pool[i].w;if(rnd<=sum){winIdx=i;break;}}
   var targetDeg=(360-(winIdx*45+22.5))%360;
-  var disc=document.getElementById('w-disc'),res=document.getElementById('w-res');
+var disc=document.getElementById('w-disc'),res=document.getElementById('w-res');
   res.innerText='🌀 Колесо крутится...';
+  disc.style.transition='none';
+  disc.style.transform='rotate('+(wDeg%360)+'deg)';
+  void disc.offsetWidth;
+  disc.style.transition='transform 3.2s cubic-bezier(0.15, 0.85, 0.2, 1)';
   wDeg+=1800+(targetDeg-(wDeg%360)+360)%360;
-  disc.style.transform='rotate('+wDeg+'deg)';
+  disc.style.transform='rotate('+wDeg+'deg)';  
   setTimeout(function(){
     var win=pool[winIdx];win.fn();
     if(type==='free')localStorage.setItem('fx_wfree',Date.now());
