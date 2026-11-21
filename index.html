@@ -396,8 +396,7 @@
       });
     }
     function payStars(cnt,url){
-      if(tg&&tg.openInvoice)tg.openInvoice(url,function(status){if(status==='paid'){st.stars+=cnt;save();renderAll();alert('🎉 Начислено +'+cnt+' ⭐!');}});
-      else if(tg&&tg.openTelegramLink)tg.openTelegramLink(url);
+      if(tg&&tg.openTelegramLink)tg.openTelegramLink(url);
       else window.open(url,'_blank');
     }
     function buyVip(){
