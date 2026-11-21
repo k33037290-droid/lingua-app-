@@ -537,7 +537,39 @@ function spinWheel(type){
     alert('🎡 Стрелка остановилась на слоте '+win.lbl+'! Выигрыш: '+win.ico);
   },3300);
 }
-drawSlots('free');updWheelUI();    
+drawSlots('free');updWheelUI();
+    var leagueXp=parseInt(localStorage.getItem('fx_lxp')||'0',10);
+function addLeagueXp(pts){leagueXp+=pts;localStorage.setItem('fx_lxp',leagueXp);}
+function toGems(){
+  document.querySelectorAll('.top, #s-shop, #s-inv, #wheel-panel, #shop-skins').forEach(function(el){
+    if(el)el.innerHTML=el.innerHTML.replace(/⚡/g,'💎').replace(/\bXP\b/g,'💎');
+  });
+}
+setTimeout(toGems,200);
+var _origUpdTop=updTop;
+updTop=function(){_origUpdTop();toGems();};
+var _origRenderSkins=renderSkins;
+renderSkins=function(){_origRenderSkins();toGems();};
+var _origChk=chk;
+chk=function(idx){
+  var prevXp=xp,prevDone=done.slice(),q=(typeof curQ!=='undefined'&&curQ[qIdx])?curQ[qIdx]:null;
+  var ok=q&&(idx===q.c);
+  _origChk(idx);
+  if(ok){
+    xp=prevXp;
+    addLeagueXp(25);
+    if(done.length>prevDone.length){
+      var drop=vip?60:(Math.floor(Math.random()*16)+10);
+      xp+=drop;
+      var r=Math.random()*100,extra='';
+      if(r<2){frz+=1;extra='\n🎁 Редкий бонус: +1 ❄️ Заморозка!';}
+      else if(r<6){if(!vip)hp=Math.min(5,hp+1);extra='\n🎁 Бонус: +1 ❤️ Жизнь!';}
+      else if(r<15){food+=1;extra='\n🎁 Бонус: +1 🍓 Еда!';}
+      alert('🧰 Сундук урока открыт!\n💎 Выпало: +'+drop+' Кристаллов'+(vip?' (👑 VIP Бонус)':'')+extra);
+    }
+    updTop();save();
+  }
+};
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
 if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
 </script>
