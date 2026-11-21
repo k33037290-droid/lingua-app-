@@ -652,16 +652,18 @@ function updWalletMini(){
 }
 function applyExtra(raw){
   try{
+    var g=parseInt(localStorage.getItem('fx_gems')||'0',10);
+    if(g>xp)xp=g;
     var d=JSON.parse(raw||'null');
-    if(!d)return;
-    if(typeof d.xp==='number')xp=d.xp;
-    if(d.prog&&typeof prog!=='undefined')prog=d.prog;
-    if(typeof d.vip==='boolean')vip=d.vip;
-    if(d.lvl&&typeof lvl!=='undefined')lvl=d.lvl;
-    if(typeof d.lxp==='number')leagueXp=d.lxp;
+    if(d){
+      if(typeof d.xp==='number'&&d.xp>xp)xp=d.xp;
+      if(d.prog&&typeof prog!=='undefined')prog=d.prog;
+      if(typeof d.vip==='boolean')vip=d.vip;
+      if(d.lvl&&typeof lvl!=='undefined')lvl=d.lvl;
+      if(typeof d.lxp==='number')leagueXp=d.lxp;
+    }
     updTop();updWalletMini();
-    if(typeof goChain==='function')goChain();
-    if((d.prog&&Object.keys(d.prog).length>0)||xp>0||stars>0||vip){
+    if((typeof prog!=='undefined'&&Object.keys(prog).length>0)||xp>0||stars>0||vip){
       show('s-path');
       if(typeof goChain==='function')goChain();
     }
@@ -669,6 +671,7 @@ function applyExtra(raw){
 }
 function saveFull(){
   try{
+    localStorage.setItem('fx_gems',String(xp));
     var str=JSON.stringify({
       xp:xp,
       prog:(typeof prog!=='undefined'?prog:{}),
@@ -677,16 +680,21 @@ function saveFull(){
       lxp:leagueXp
     });
     localStorage.setItem('fx_extra',str);
-    if(tg&&tg.CloudStorage)tg.CloudStorage.setItem('fx_extra',str);
+    if(tg&&tg.CloudStorage){
+      tg.CloudStorage.setItem('fx_extra',str);
+      tg.CloudStorage.setItem('fx_gems',String(xp));
+    }
   }catch(e){}
 }
 var _origSave=save;
 save=function(){_origSave();saveFull();};
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
 applyExtra(localStorage.getItem('fx_extra'));
+setTimeout(function(){applyExtra(localStorage.getItem('fx_extra'));},400);
 if(tg&&tg.CloudStorage){
   tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
   tg.CloudStorage.getItem('fx_extra',function(err,val){if(!err&&val)applyExtra(val);});
+  tg.CloudStorage.getItem('fx_gems',function(err,val){if(!err&&val&&parseInt(val,10)>xp){xp=parseInt(val,10);updTop();updWalletMini();}});
 }
 updWalletMini();showTop(10);
 </script>
