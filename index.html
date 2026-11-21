@@ -84,7 +84,7 @@
             { q: "Что означает 'Success'?", s: "Success", o: ["Удача", "Успех", "Работа", "Деньги"], a: 1 }
         ];
 
-        var idx = 0, xp = 0, hp = 3;
+        var idx = 0, xp = 0, hp = 3, isVip = false;
 
         function ans(i, el) {
             var bs = document.querySelectorAll('.opt-btn');
@@ -95,11 +95,11 @@
             } else {
                 el.classList.add('wrong');
                 bs[qs[idx].a].classList.add('correct');
-                hp = Math.max(0, hp - 1);
+                if (!isVip) { hp = Math.max(0, hp - 1); }
             }
             document.getElementById('xp').innerText = xp;
             document.getElementById('my-xp').innerText = xp + ' XP';
-            document.getElementById('hp').innerText = hp;
+            document.getElementById('hp').innerText = isVip ? '♾️' : hp;
             document.getElementById('next-btn').style.display = 'block';
         }
 
@@ -139,9 +139,23 @@
         }
 
         function buy(item) {
-            if (tg) {
-                tg.sendData(JSON.stringify({ action: "buy", item: item }));
-                tg.close();
+            var links = {
+                vip: "https://" + "t.me/$ElaWUcXSCEjkFgAANpAt_vj4fGQ",
+                freeze: "https://" + "t.me/$_nXN6cXSCEjlFgAApjf9EBrY0v4"
+            };
+            var url = links[item];
+            if (tg && tg.openInvoice) {
+                tg.openInvoice(url, function(status) {
+                    if (status === "paid") {
+                        if (item === "vip") {
+                            isVip = true;
+                            document.getElementById('hp').innerText = '♾️';
+                        }
+                        alert("🎉 Оплата прошла успешно! Бонус активирован!");
+                    }
+                });
+            } else {
+                window.open(url, "_blank");
             }
         }
     </script>
