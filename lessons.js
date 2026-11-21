@@ -68,5 +68,66 @@ var UNITS = [
         ]
       }
     ]
+  },
+    {
+    id: "u3", lvl: "B1", vip: true,
+    title: "Модуль 3: Работа, карьера и фразовые глаголы",
+    guide: "Деловая лексика, собеседования, Present Perfect и популярные фразовые глаголы.",
+    steps: [
+      {
+        type: "lesson", name: "Фразовые глаголы", stepsTotal: 3,
+        qs: [
+          { t: "c", h: "Что означает?", q: "Never give up", s: "Never give up", o: ["Не дари", "Никогда не сдавайся", "Не спи", "Продолжай"], a: 1 },
+          { t: "b", h: "Собери: «Зависит от погоды»", q: "It depends on the weather", s: "It depends on the weather", w: ["weather", "depends", "It", "the", "on"], ans: ["It", "depends", "on", "the", "weather"] },
+          { t: "c", h: "Переведи", q: "Look forward to", s: "I look forward to seeing you", o: ["Смотреть вперед", "С нетерпением ждать", "Оглядываться", "Искать выход"], a: 1 },
+          { t: "c", h: "Переведи", q: "To figure out", s: "I will figure it out", o: ["Забыть", "Разобраться / понять", "Посчитать", "Отказаться"], a: 1 },
+          { t: "b", h: "Собери: «Не могу терпеть»", q: "I cannot put up with it", s: "I cannot put up with it", w: ["with", "put", "I", "it", "cannot", "up"], ans: ["I", "cannot", "put", "up", "with", "it"] }
+        ]
+      },
+      {
+        type: "chest", name: "Карьерный сундук", xpBonus: 100, foodBonus: 5
+      },
+      {
+        type: "lesson", name: "Офис и проекты", stepsTotal: 3,
+        qs: [
+          { t: "c", h: "Переведи термин", q: "Deadline", s: "We met the deadline", o: ["Крайний срок сдачи", "Начало проекта", "Отпуск", "Зарплата"], a: 0 },
+          { t: "c", h: "Переведи фразу", q: "He got promoted last month", s: "He got promoted last month", o: ["Его уволили", "Его повысили в прошлом месяце", "Ушел в отпуск", "Нашел работу"], a: 1 },
+          { t: "c", h: "Что означает?", q: "Remote work", s: "Remote work", o: ["Работа в офисе", "Удаленная работа", "Ночная смена", "Стажировка"], a: 1 },
+          { t: "b", h: "Собери: «С моей точки зрения»", q: "In my point of view", s: "In my point of view", w: ["of", "my", "In", "view", "point"], ans: ["In", "my", "point", "of", "view"] },
+          { t: "c", h: "Что означает?", q: "Reliable partner", s: "Reliable partner", o: ["Странный", "Надежный партнер", "Богатый", "Новый"], a: 1 }
+        ]
+      }
+    ]
+  },
+  {
+    id: "u4", lvl: "B2–C1", vip: true,
+    title: "Модуль 4: Идиомы носителей и бизнес",
+    guide: "Выражения, которые каждый день используют американцы и британцы в живой речи.",
+    steps: [
+      {
+        type: "lesson", name: "Идиомы США", stepsTotal: 3,
+        qs: [
+          { t: "c", h: "Что означает?", q: "Piece of cake", s: "It is a piece of cake", o: ["Кусок торта", "Пара пустяков / очень легко", "Сложная задача", "Обед"], a: 1 },
+          { t: "c", h: "Переведи", q: "Let's call it a day", s: "Let's call it a day", o: ["Удачный день", "На сегодня хватит / закругляемся", "Позвоним днем", "Заново"], a: 1 },
+          { t: "c", h: "Что значит?", q: "Under the weather", s: "I feel under the weather", o: ["Под дождем", "Приболеть / плохо себя чувствовать", "В восторге", "Прогноз"], a: 1 },
+          { t: "b", h: "Собери: «На одной волне»", q: "We are on the same page", s: "We are on the same page", w: ["same", "We", "page", "on", "are", "the"], ans: ["We", "are", "on", "the", "same", "page"] },
+          { t: "c", h: "Переведи", q: "To spill the beans", s: "Who spilled the beans?", o: ["Просыпать фасоль", "Проболтаться / выдать секрет", "Ужин", "Беспорядок"], a: 1 }
+        ]
+      },
+      {
+        type: "chest", name: "Сундук Мастера", xpBonus: 150, foodBonus: 7
+      },
+      {
+        type: "lesson", name: "Сложная грамматика", stepsTotal: 3,
+        qs: [
+          { t: "c", h: "Выбери форму", q: "Had I known, I ___ differently", s: "Had I known, I would have acted differently", o: ["will act", "would act", "would have acted", "acted"], a: 2 },
+          { t: "c", h: "Вставь глагол", q: "I wish I ___ more free time", s: "I wish I had more free time", o: ["have", "had", "will have", "having"], a: 1 },
+          { t: "b", h: "Собери с инверсией", q: "Never have I seen this", s: "Never have I seen this", w: ["I", "seen", "Never", "this", "have"], ans: ["Never", "have", "I", "seen", "this"] },
+          { t: "c", h: "Что означает?", q: "Albeit", s: "He accepted, albeit reluctantly", o: ["Хотя / пусть и", "Потому что", "Вместо", "Напротив"], a: 0 },
+          { t: "c", h: "Переведи", q: "Ambiguous", s: "Ambiguous", o: ["Амбициозный", "Двусмысленный / неоднозначный", "Очевидный", "Огромный"], a: 1 }
+        ]
+      }
+    ]
   }
+
 ];
