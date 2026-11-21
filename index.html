@@ -337,7 +337,41 @@ function buy(it){
   if(it==='vip'){vip=true;updTop();save();alert('👑 Super VIP активирован!');goChain();}
   else{frz+=1;hp=5;updTop();save();alert('❄️ Заморозка + 5 жизней куплены!');}
 }
-
+var SKINS=[
+  {id:'fox',ico:'🦊',name:'Классик',cur:'free',cost:0},
+  {id:'panda',ico:'🐼',name:'Панда',cur:'xp',cost:100},
+  {id:'tiger',ico:'🐯',name:'Тигр',cur:'xp',cost:200},
+  {id:'wolf',ico:'🐺',name:'Волк',cur:'xp',cost:350},
+  {id:'lion',ico:'🦁',name:'Лев VIP',cur:'star',cost:20},
+  {id:'dragon',ico:'🐲',name:'Дракон',cur:'star',cost:40}
+];
+var mySkins=JSON.parse(localStorage.getItem('fx_skins')||'["fox"]');
+var curSkin=localStorage.getItem('fx_cur')||'fox';
+function getIco(){for(var i=0;i<SKINS.length;i++)if(SKINS[i].id===curSkin)return SKINS[i].ico;return '🦊';}
+function buySkin(id){
+  var s=SKINS.find(function(x){return x.id===id;});if(!s)return;
+  if(mySkins.indexOf(id)!==-1){curSkin=id;localStorage.setItem('fx_cur',id);renderSkins();updTop();return;}
+  if(s.cur==='xp'){if(xp<s.cost){alert('Нужно '+s.cost+' ⚡!');return;}xp-=s.cost;}
+  else if(s.cur==='star'){if(stars<s.cost){alert('Нужно '+s.cost+' ⭐!');return;}stars-=s.cost;syncStars();}
+  mySkins.push(id);curSkin=id;
+  localStorage.setItem('fx_skins',JSON.stringify(mySkins));localStorage.setItem('fx_cur',id);
+  updTop();save();renderSkins();alert('🎉 Образ «'+s.name+'» надет!');
+}
+function renderSkins(){
+  var inv=document.getElementById('inv-skins'),shp=document.getElementById('shop-skins');
+  if(inv)inv.innerHTML='';if(shp)shp.innerHTML='';
+  SKINS.forEach(function(s){
+    var has=mySkins.indexOf(s.id)!==-1,eq=curSkin===s.id;
+    if(inv&&has){
+      inv.innerHTML+='<div class="card" style="text-align:center;margin:0;border-color:'+(eq?'#58cc02':'#37464f')+'"><div style="font-size:38px">'+s.ico+'</div><div style="font-weight:800;margin:6px 0">'+s.name+'</div><button type="button" class="sbtn" style="width:100%;background:'+(eq?'#58cc02':'#1cb0f6')+';color:#fff" onclick="buySkin(\''+s.id+'\')">'+(eq?'✅ Надет':'Надеть')+'</button></div>';
+    }
+    if(shp){
+      var lbl=has?(eq?'✅ Надет':'Надеть'):(s.cost+(s.cur==='xp'?' ⚡':' ⭐'));
+      shp.innerHTML+='<div class="card" style="text-align:center;margin:0"><div style="font-size:38px">'+s.ico+'</div><div style="font-weight:800;margin:6px 0">'+s.name+'</div><button type="button" class="sbtn" style="width:100%" onclick="buySkin(\''+s.id+'\')">'+lbl+'</button></div>';
+    }
+  });
+}
+renderSkins();
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
 if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
 </script>
