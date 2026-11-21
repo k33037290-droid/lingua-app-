@@ -429,6 +429,16 @@ function openCase(type){
     }
   },90);
 }
+ function devTest(){
+  var uid=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)?tg.initDataUnsafe.user.id:0;
+  if(uid!==СЮДА_ВСТАВЬ_СВОЙ_ID)return;
+  var pin=prompt('Пароль разработчика:');
+  if(pin==='2212'){
+    stars+=100;xp+=1000;
+    syncStars();updTop();save();
+    alert('🛠 Начислено +100 ⭐ и +1000 ⚡!');
+  }
+ }   
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
 if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
 </script>
