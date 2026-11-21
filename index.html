@@ -757,7 +757,7 @@
     }
     function shareRef(){
       var uid=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)?tg.initDataUnsafe.user.id:'0';
-      var link='https://t.meshare/url?url=https://t.meFoxyLinguaBot?start=ref_'+uid;
+      var link='https://t.me/share/url?url=https://t.me/FoxyLinguaBot?start=ref_'+uid;
       if(tg&&tg.openTelegramLink)tg.openTelegramLink(link);else window.open(link,'_blank');
     }
     function claimRef(){
@@ -778,8 +778,8 @@
       alert('🎉 Промокод активирован!');
     }
     function devTest(){
-      var uid=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)?tg.initDataUnsafe.user.id:0;
-      if(uid!==8426837997)return;
+      var uid=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)?Number(tg.initDataUnsafe.user.id):0;
+      if(uid&&uid!==8426837997)return;
       var p=prompt('Пароль разработчика:');
       if(p==='2212'){st.gems+=1000;st.stars+=100;st.refs+=3;save();renderAll();alert('🛠️ Начислено +1000 💎, +100 ⭐ и +3 друга!');}
     }
