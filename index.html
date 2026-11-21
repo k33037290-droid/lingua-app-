@@ -296,7 +296,7 @@ var SLUGS={
   250:'https://t.me/$KHUp-cXSCEgQGAAAFMllqAfzVOg'
 };
 function topUp(amt){
-  var u='https://t.me[amt];
+  var u=SLUGS[amt];
   if(tg&&tg.openInvoice){
     tg.openInvoice(u,function(st){
       if(st==='paid'){stars+=amt;syncStars();alert('✅ Начислено +'+amt+' ⭐!');}
