@@ -499,7 +499,7 @@ function drawSlots(type){
   }
 }
 function updWheelUI(){
-  var last=parseInt(localStorage.getItem('fx_wfree')||'0',10),diff=86400000-(Date.now()-last);
+  var last=parseInt(localStorage.getItem('fx_wfree'||'0',10),diff=86400000-(Date.now()-last);
   var st=document.getElementById('w-status'),btn=document.getElementById('wbtn-free');
   if(!st||!btn)return;
   if(diff<=0){st.innerText='✨ Бесплатный спин готов!';st.style.color='#58cc02';btn.style.opacity='1';}
