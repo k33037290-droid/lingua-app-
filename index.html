@@ -137,6 +137,7 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
 </div>
 
 <script>
+  window.onerror=function(m,u,l){alert('Ошибка на строке '+l+': '+m);};
 var tg=window.Telegram?window.Telegram.WebApp:null;if(tg)tg.expand();
 var tQs=[
 {q:"1. Переведи: 'They are my friends'",o:["1. Они мои друзья","2. Он мой брат","3. Мы на работе"],a:0,p:1},
