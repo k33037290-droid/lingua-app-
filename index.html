@@ -554,36 +554,86 @@ drawSlots('free');updWheelUI();
     var leagueXp=parseInt(localStorage.getItem('fx_lxp')||'0',10);
 function addLeagueXp(pts){leagueXp+=pts;localStorage.setItem('fx_lxp',leagueXp);}
 function toGems(){
-  document.querySelectorAll('.top, #s-shop, #s-inv, #wheel-panel, #shop-skins').forEach(function(el){
+  document.querySelectorAll('#s-shop, #s-inv, #wheel-panel, #shop-skins').forEach(function(el){
     if(el)el.innerHTML=el.innerHTML.replace(/⚡/g,'💎').replace(/\bXP\b/g,'💎');
   });
 }
 setTimeout(toGems,200);
 var _origUpdTop=updTop;
-updTop=function(){_origUpdTop();toGems();};
+updTop=function(){_origUpdTop();toGems();updWalletMini();};
 var _origRenderSkins=renderSkins;
 renderSkins=function(){_origRenderSkins();toGems();};
-var _origChk=chk;
-chk=function(idx){
-  var prevXp=xp,prevDone=done.slice(),q=(typeof curQ!=='undefined'&&curQ[qIdx])?curQ[qIdx]:null;
-  var ok=q&&(idx===q.c);
-  _origChk(idx);
-  if(ok){
-    xp=prevXp;
-    addLeagueXp(25);
-    if(done.length>prevDone.length){
-      var drop=vip?60:(Math.floor(Math.random()*16)+10);
-      xp+=drop;
-      var r=Math.random()*100,extra='';
-      if(r<2){frz+=1;extra='\n🎁 Редкий бонус: +1 ❄️ Заморозка!';}
-      else if(r<6){if(!vip)hp=Math.min(5,hp+1);extra='\n🎁 Бонус: +1 ❤️ Жизнь!';}
-      else if(r<15){food+=1;extra='\n🎁 Бонус: +1 🍓 Еда!';}
-      alert('🧰 Сундук урока открыт!\n💎 Выпало: +'+drop+' Кристаллов'+(vip?' (👑 VIP Бонус)':'')+extra);
-    }
+
+var _origChkC=chkC;
+chkC=function(x,el){
+  var prevXp=xp,q=UNITS[cu].steps[cs].qs[qi],ok=(x===q.a);
+  _origChkC(x,el);
+  if(ok){xp=prevXp;addLeagueXp(25);updTop();save();}
+};
+var _origFb=fb;
+fb=function(ok,sub){
+  _origFb(ok,sub);
+  if(ok)document.getElementById('stitle').innerText='🦊 Верно! +25 🏆';
+};
+var _origNextQ=nextQ;
+nextQ=function(){
+  var isLast=(qi+1>=UNITS[cu].steps[cs].qs.length);
+  _origNextQ();
+  if(isLast){
+    var drop=vip?60:(Math.floor(Math.random()*16)+10);
+    xp+=drop;
+    var r=Math.random()*100,extra='';
+    if(r<2){frz+=1;extra='\n🎁 Редкий бонус: +1 ❄️ Заморозка!';}
+    else if(r<6){if(!vip)hp=Math.min(5,hp+1);extra='\n🎁 Бонус: +1 ❤️ Жизнь!';}
+    else if(r<15){full=Math.min(100,full+20);extra='\n🎁 Бонус: +20% 🍖 Сытости!';}
     updTop();save();
+    alert('🧰 Сундук урока открыт!\n💎 Выпало: +'+drop+' Кристаллов'+(vip?' (👑 VIP Бонус)':'')+extra);
   }
 };
-  function toggleWallet(){
+
+var PROMOS={'START10':10,'CHAMPION50':50,'FRIEND25':25};
+var usedPromos=JSON.parse(localStorage.getItem('fx_promos')||'[]');
+function usePromo(){
+  var inp=document.getElementById('promo-inp'),code=(inp?inp.value:'').trim().toUpperCase();
+  if(!code)return;
+  if(usedPromos.indexOf(code)!==-1){alert('❌ Этот промокод уже активирован!');return;}
+  if(!PROMOS[code]){alert('❌ Неверный промокод!');return;}
+  var add=PROMOS[code];
+  stars+=add;syncStars();usedPromos.push(code);
+  localStorage.setItem('fx_promos',JSON.stringify(usedPromos));
+  inp.value='';updTop();save();
+  alert('🎉 Промокод активирован! Начислено +'+add+' ⭐!');
+}
+function shareRef(){
+  var uid=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)?tg.initDataUnsafe.user.id:'0';
+  var link='https://t.me('Учи английский с Фокси 🦊, крути Колесо Фортуны 🎡 и забирай призы!');
+  if(tg&&tg.openTelegramLink)tg.openTelegramLink(link);else window.open(link,'_blank');
+}
+function showTop(lim){
+  var b10=document.getElementById('ltab-10'),b200=document.getElementById('ltab-200'),box=document.getElementById('league-list');
+  if(document.getElementById('my-lxp'))document.getElementById('my-lxp').innerText=leagueXp;
+  if(!box)return;
+  if(b10&&b200){
+    b10.style.background=(lim===10)?'#58cc02':'#263740';b10.style.color=(lim===10)?'#fff':'#afafaf';
+    b200.style.background=(lim===200)?'#58cc02':'#263740';b200.style.color=(lim===200)?'#fff':'#afafaf';
+  }
+  var myName=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)?tg.initDataUnsafe.user.first_name:'Ты (Игрок)';
+  var bots=[
+    {n:'Alex_Pro 🦁',p:1450},{n:'Мария 🦊',p:1180},{n:'Dima_09 🐯',p:940},
+    {n:'Kate_Eng 👑',p:760},{n:'Артем 💎',p:590},{n:'Sofia_Star 🐼',p:420},
+    {n:'Max_Win 🐺',p:310},{n:'Алина 🌸',p:210},{n:'Nikita_GG 🐲',p:120}
+  ];
+  if(lim===200){for(var k=10;k<=200;k++)bots.push({n:'Ученик #'+k,p:Math.max(10,115-Math.floor(k*0.5))});}
+  bots.push({n:myName+' (Вы)',p:leagueXp,me:true});
+  bots.sort(function(a,b){return b.p-a.p;});
+  box.innerHTML='';
+  bots.slice(0,lim).forEach(function(u,idx){
+    var med=idx===0?'🥇':(idx===1?'🥈':(idx===2?'🥉':'#'+(idx+1)));
+    var prize=idx===0?' (Приз: 50 ⭐)':(idx===1?' (Приз: 30 ⭐)':(idx===2?' (Приз: 15 ⭐)':''));
+    box.innerHTML+='<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;margin-bottom:8px;border-color:'+(u.me?'#58cc02':'#37464f')+';background:'+(u.me?'#1b2e1e':'#18242a')+'"><div style="font-weight:800;font-size:14px">'+med+' '+u.n+'<span style="color:#ffc800;font-size:11px">'+prize+'</span></div><div style="font-weight:900;color:#ffc800">🏆 '+u.p+'</div></div>';
+  });
+}
+function toggleWallet(){
   var w=document.getElementById('wallet-drop'),a=document.getElementById('w-arr');
   if(!w)return;
   var open=(w.style.display==='none');
@@ -594,19 +644,12 @@ chk=function(idx){
 function updWalletMini(){
   if(document.getElementById('mini-stars'))document.getElementById('mini-stars').innerText=stars;
   if(document.getElementById('mini-xp'))document.getElementById('mini-xp').innerText=xp;
-  if(document.getElementById('hcups'))document.getElementById('hcups').innerText=(typeof leagueXp!=='undefined'?leagueXp:0);
+  if(document.getElementById('hcups'))document.getElementById('hcups').innerText=leagueXp;
 }
-var _wUpd=updTop;
-updTop=function(){_wUpd();updWalletMini();};
-setTimeout(updWalletMini,250);
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
-if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
-  setTimeout(function(){
-  if((typeof done!=='undefined'&&done.length>0)||xp>0||stars>0||vip){
-    tab('path',document.querySelectorAll('.nbtn')[1]);
-  }
-},350);
-
+if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val){load(val);if(xp>0||stars>0||vip)show('s-path');}});
+if(xp>0||stars>0||vip)show('s-path');
+updWalletMini();showTop(10);
 </script>
 </body>
 </html>
