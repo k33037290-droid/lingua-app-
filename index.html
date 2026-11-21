@@ -601,6 +601,12 @@ updTop=function(){_wUpd();updWalletMini();};
 setTimeout(updWalletMini,250);
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
 if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
+  setTimeout(function(){
+  if((typeof done!=='undefined'&&done.length>0)||xp>0||stars>0||vip){
+    tab('path',document.querySelectorAll('.nbtn')[1]);
+  }
+},350);
+
 </script>
 </body>
 </html>
