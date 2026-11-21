@@ -1,366 +1,131 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LinguaPro Dark</title>
-  <script src="https://telegram.org"></script>
-  <style>
-    :root {
-      --bg-color: #131f24;
-      --surface-color: #202f36;
-      --border-color: #37464f;
-      --text-main: #ffffff;
-      --text-muted: #afafaf;
-      --duo-green: #58cc02;
-      --duo-green-shadow: #58a700;
-      --duo-blue: #1cb0f6;
-      --duo-blue-shadow: #1899d6;
-      --duo-locked: #37464f;
-      --duo-locked-shadow: #2b3840;
-      --duo-gold: #ffc800;
-      --duo-gold-shadow: #e5a500;
-      --duo-red: #ff4b4b;
-      --duo-red-shadow: #ea2b2b;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LinguaPro — Учи английский как в игре</title>
+    <script src="https://telegram.org"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #131f24; color: #fff; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 2px solid #37464f; font-weight: 800; font-size: 15px; background: #131f24; z-index: 20; }
+        .badge-lvl { background: #1cb0f6; color: #fff; padding: 4px 10px; border-radius: 10px; font-size: 13px; }
+        
+        .content { flex: 1; padding: 16px; overflow-y: auto; padding-bottom: 85px; }
+        .tab { display: none; }
+        .tab.active { display: block; }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
+        .course-card { background: #1f2f37; border: 2px solid #37464f; border-bottom-width: 5px; border-radius: 18px; padding: 16px; margin-bottom: 12px; transition: 0.1s; }
+        .course-card:active { transform: translateY(2px); border-bottom-width: 3px; }
+        .course-card.locked { border-color: #5c4918; }
+        .course-card.recommended { border-color: #1cb0f6; }
+        .course-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .course-tag { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 8px; text-transform: uppercase; }
+        .tag-free { background: #1e3b17; color: #58cc02; }
+        .tag-vip { background: #3d2e0a; color: #ffc800; }
+        .tag-rec { background: #15384c; color: #1cb0f6; margin-left: 6px; }
+        .course-title { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+        .course-desc { font-size: 13px; color: #afafaf; line-height: 1.35; }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      padding-bottom: 90px;
-      overflow-x: hidden;
-      user-select: none;
-    }
+        .path-header { background: #58cc02; color: #fff; padding: 16px; border-radius: 16px; margin-bottom: 24px; box-shadow: 0 4px 0 #46a302; }
+        .path-header.vip-hdr { background: #ffc800; color: #131f24; box-shadow: 0 4px 0 #d9a600; }
+        .path-container { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 10px 0 30px; }
+        .node-wrap { display: flex; flex-direction: column; align-items: center; position: relative; }
+        .node-btn { width: 74px; height: 70px; border-radius: 50%; border: none; font-size: 28px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+        .node-btn.done { background: #ffc800; color: #131f24; box-shadow: 0 6px 0 #c99c00; }
+        .node-btn.current { background: #58cc02; color: #fff; box-shadow: 0 6px 0 #46a302; animation: pulse 1.6s infinite; }
+        .node-btn.locked-node { background: #263740; color: #5a6d77; box-shadow: 0 6px 0 #1b282f; }
+        .node-label { margin-top: 8px; font-size: 13px; font-weight: 800; color: #e5e5e5; background: #1f2f37; padding: 4px 10px; border-radius: 10px; border: 1px solid #37464f; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
 
-    .top-bar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background-color: var(--bg-color);
-      border-bottom: 2px solid var(--border-color);
-      padding: 10px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        .lesson-top { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+        .prog-bg { flex: 1; height: 14px; background: #263740; border-radius: 10px; overflow: hidden; }
+        .prog-fill { height: 100%; width: 0%; background: #58cc02; transition: width 0.3s; border-radius: 10px; }
 
-    .course-selector {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--surface-color);
-      border: 2px solid var(--border-color);
-      padding: 6px 12px;
-      border-radius: 12px;
-      font-weight: 800;
-      font-size: 15px;
-      cursor: pointer;
-    }
+        .q-type { font-size: 12px; color: #1cb0f6; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .q-box { background: #1f2f37; border: 2px solid #37464f; border-radius: 16px; padding: 16px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; line-height: 1.35; }
+        .audio-btn { background: #1cb0f6; border: none; border-radius: 12px; width: 44px; height: 44px; font-size: 20px; color: #fff; flex-shrink: 0; box-shadow: 0 3px 0 #1899d6; }
+        .opt-btn { width: 100%; background: #1f2f37; color: #fff; border: 2px solid #37464f; border-bottom-width: 5px; border-radius: 14px; padding: 14px 16px; font-size: 16px; font-weight: 700; text-align: left; margin-bottom: 10px; display: block; }
+        .opt-btn.correct { background: #1e3b17; border-color: #58cc02; color: #58cc02; }
+        .opt-btn.wrong { background: #3b1717; border-color: #ff4b4b; color: #ff4b4b; }
 
-    .stats {
-      display: flex;
-      gap: 14px;
-      font-weight: 800;
-      font-size: 15px;
-    }
+        .build-area { min-height: 56px; border-bottom: 2px solid #37464f; padding: 8px 4px; margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+        .word-bank { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .word-chip { background: #1f2f37; color: #fff; border: 2px solid #37464f; border-bottom-width: 4px; border-radius: 12px; padding: 10px 14px; font-size: 16px; font-weight: 700; }
+        .word-chip.used { opacity: 0.25; pointer-events: none; }
 
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
+        .back-btn { background: none; border: none; color: #afafaf; font-weight: 800; font-size: 18px; }
+        .btn-green { width: 100%; padding: 15px; background: #58cc02; color: #fff; border: none; border-bottom: 4px solid #46a302; border-radius: 14px; font-weight: 800; font-size: 16px; margin-top: 8px; text-transform: uppercase; }
+        .btn-gold { width: 100%; padding: 15px; background: #ffc800; color: #131f24; border: none; border-bottom: 4px solid #d9a600; border-radius: 14px; font-weight: 800; font-size: 16px; margin-top: 10px; text-transform: uppercase; }
 
-    .unit-banner {
-      margin: 16px;
-      background-color: var(--duo-green);
-      border-radius: 16px;
-      padding: 16px 18px;
-      box-shadow: 0 4px 0 var(--duo-green-shadow);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        .shop-card { background: #1f2f37; border: 2px solid #37464f; border-radius: 16px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .buy-btn { background: #ffc800; color: #000; border: none; border-radius: 10px; padding: 10px 14px; font-weight: 800; white-space: nowrap; }
 
-    .unit-banner.blue {
-      background-color: var(--duo-blue);
-      box-shadow: 0 4px 0 var(--duo-blue-shadow);
-    }
-
-    .unit-subtitle {
-      font-size: 12px;
-      text-transform: uppercase;
-      font-weight: 800;
-      opacity: 0.9;
-      letter-spacing: 0.6px;
-    }
-
-    .unit-title {
-      font-size: 18px;
-      font-weight: 800;
-      margin-top: 3px;
-    }
-
-    .guide-btn {
-      background: rgba(0, 0, 0, 0.2);
-      border: 2px solid rgba(255, 255, 255, 0.25);
-      border-radius: 12px;
-      padding: 8px 10px;
-      color: white;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    /* Извилистая дорожка */
-    .path-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 24px 0 40px;
-      position: relative;
-    }
-
-    .node-wrapper {
-      position: relative;
-      margin: 16px 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .active-ring {
-      position: absolute;
-      width: 90px;
-      height: 84px;
-      border-radius: 50%;
-      border: 5px solid var(--border-color);
-      border-top-color: var(--duo-green);
-      border-right-color: var(--duo-green);
-      pointer-events: none;
-    }
-
-    .lesson-btn {
-      width: 72px;
-      height: 65px;
-      border-radius: 50%;
-      border: none;
-      background-color: var(--duo-green);
-      box-shadow: 0 6px 0 var(--duo-green-shadow);
-      color: white;
-      font-size: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      position: relative;
-      z-index: 2;
-    }
-
-    .lesson-btn:active {
-      transform: translateY(4px);
-      box-shadow: 0 2px 0 var(--duo-green-shadow);
-    }
-
-    .lesson-btn.completed {
-      background-color: var(--duo-gold);
-      box-shadow: 0 6px 0 var(--duo-gold-shadow);
-    }
-
-    .lesson-btn.locked {
-      background-color: var(--duo-locked);
-      box-shadow: 0 6px 0 var(--duo-locked-shadow);
-      color: #6b7d87;
-    }
-
-    .start-tooltip {
-      position: absolute;
-      top: -44px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: var(--surface-color);
-      border: 2px solid var(--border-color);
-      color: var(--duo-green);
-      font-weight: 800;
-      font-size: 13px;
-      padding: 6px 14px;
-      border-radius: 12px;
-      white-space: nowrap;
-      z-index: 10;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 68px;
-      background-color: var(--bg-color);
-      border-top: 2px solid var(--border-color);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 90;
-    }
-
-    .nav-item {
-      font-size: 24px;
-      padding: 8px 18px;
-      border-radius: 12px;
-      border: 2px solid transparent;
-      cursor: pointer;
-      opacity: 0.65;
-    }
-
-    .nav-item.active {
-      opacity: 1;
-      background-color: rgba(28, 176, 246, 0.15);
-      border-color: var(--duo-blue);
-    }
-
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 200;
-      align-items: flex-end;
-      justify-content: center;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal-sheet {
-      background: var(--bg-color);
-      border-top: 2px solid var(--border-color);
-      border-radius: 24px 24px 0 0;
-      width: 100%;
-      max-width: 500px;
-      padding: 24px 20px 32px;
-    }
-
-    .modal-title {
-      font-size: 20px;
-      font-weight: 800;
-      margin-bottom: 16px;
-      text-align: center;
-    }
-
-    .course-option, .quiz-option {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      margin-bottom: 10px;
-      background: var(--surface-color);
-      border: 2px solid var(--border-color);
-      box-shadow: 0 3px 0 var(--border-color);
-      border-radius: 14px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 16px;
-    }
-
-    .course-option.selected, .quiz-option.selected {
-      border-color: var(--duo-blue);
-      box-shadow: 0 3px 0 var(--duo-blue-shadow);
-      background: rgba(28, 176, 246, 0.15);
-    }
-
-    .quiz-option.wrong {
-      border-color: var(--duo-red);
-      box-shadow: 0 3px 0 var(--duo-red-shadow);
-      background: rgba(255, 75, 75, 0.15);
-    }
-
-    .action-btn {
-      width: 100%;
-      padding: 15px;
-      margin-top: 14px;
-      border: none;
-      border-radius: 14px;
-      background: var(--duo-green);
-      box-shadow: 0 4px 0 var(--duo-green-shadow);
-      color: white;
-      font-size: 16px;
-      font-weight: 800;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-
-    .action-btn:disabled {
-      background: var(--duo-locked);
-      box-shadow: 0 4px 0 var(--duo-locked-shadow);
-      color: #6b7d87;
-    }
-  </style>
+        .nav { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: #131f24; border-top: 2px solid #37464f; display: flex; justify-content: space-around; align-items: center; z-index: 50; }
+        .nav-item { background: none; border: none; color: #afafaf; font-size: 12px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+        .nav-item.active { color: #1cb0f6; }
+    </style>
 </head>
 <body>
 
-  <div class="top-bar">
-    <div class="course-selector" onclick="openCourseModal()">
-      <span id="current-course-icon">🐍</span>
-      <span id="current-course-name">Python</span>
-      <span style="font-size: 11px; opacity: 0.8;">▼</span>
+    <div class="header">
+        <div><span class="badge-lvl" id="user-lvl">A1</span></div>
+        <div style="color:#ff9600">🔥 <span id="streak">1</span></div>
+        <div style="color:#ffc800">⚡ <span id="xp">0</span> XP</div>
+        <div style="color:#ff4b4b">❤️ <span id="hp">5</span></div>
     </div>
-    <div class="stats">
-      <div class="stat-item">🔥 <span id="streak-count">3</span></div>
-      <div class="stat-item">💎 <span id="gems-count">120</span></div>
-      <div class="stat-item">❤️ <span id="hearts-count">5</span></div>
-    </div>
-  </div>
 
-  <div class="unit-banner" id="unit-banner">
-    <div>
-      <div class="unit-subtitle" id="unit-subtitle">Раздел 1 • Модуль 1</div>
-      <div class="unit-title" id="unit-title">Переменные и вывод данных</div>
-    </div>
-    <button class="guide-btn" onclick="alert('Справочник: print() выводит текст, = задаёт переменную.')">📖</button>
-  </div>
+    <div class="content">
+        <div id="t-test" class="tab">
+            <div style="color:#1cb0f6;font-size:13px;font-weight:800;margin-bottom:6px;">🎯 ТЕСТ НА УРОВЕНЬ (<span id="test-step">1/5</span>)</div>
+            <h2 style="font-size:19px;margin-bottom:14px;">Ответь на 5 вопросов, чтобы мы открыли твой уровень:</h2>
+            <div class="q-box"><div id="test-q">Загрузка...</div></div>
+            <div id="test-opts"></div>
+        </div>
 
-  <!-- Дорожка с кружками отрисована сразу в HTML -->
-  <div class="path-container" id="path-container">
-    <div class="node-wrapper" style="transform: translateX(0px);">
-      <button class="lesson-btn completed" onclick="openLesson(0)">⭐</button>
-    </div>
-    <div class="node-wrapper" style="transform: translateX(-48px);">
-      <div class="active-ring"></div>
-      <div class="start-tooltip">НАЧАТЬ</div>
-      <button class="lesson-btn" onclick="openLesson(1)">📘</button>
-    </div>
-    <div class="node-wrapper" style="transform: translateX(-72px);">
-      <button class="lesson-btn locked" onclick="openLesson(2)">🔒</button>
-    </div>
-    <div class="node-wrapper" style="transform: translateX(-48px);">
-      <button class="lesson-btn locked" onclick="openLesson(3)">🔒</button>
-    </div>
-    <div class="node-wrapper" style="transform: translateX(0px);">
-      <button class="lesson-btn locked" onclick="openLesson(4)">🔒</button>
-    </div>
-  </div>
+        <div id="t-courses" class="tab">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                <h2 style="font-size:20px;">📚 Все курсы (A1–C1)</h2>
+                <button type="button" onclick="startPlacementTest()" style="background:#1f2f37;border:1px solid #37464f;color:#1cb0f6;padding:6px 10px;border-radius:10px;font-size:12px;font-weight:700;">Пройти тест</button>
+            </div>
+            <div id="courses-list"></div>
+        </div>
 
-  <div class="bottom-nav">
-    <div class="nav-item active" onclick="alert('Вы на главной дорожке обучения!')">🏠</div>
-    <div class="nav-item" onclick="alert('Лига лидеров: вы на 3 месте! 🏆')">🏆</div>
-    <div class="nav-item" onclick="alert('Профиль: ударный режим 3 дня 🔥')">👤</div>
-  </div>
+        <div id="t-path" class="tab">
+            <button type="button" onclick="openCoursesMenu()" style="background:none;border:none;color:#1cb0f6;font-weight:800;font-size:15px;margin-bottom:12px;">⬅️ Все курсы</button>
+            <div class="path-header" id="path-hdr">
+                <div style="font-size:12px;font-weight:800;opacity:0.9;" id="path-lvl">УРОВЕНЬ A1</div>
+                <div style="font-size:19px;font-weight:800;" id="path-title">Название курса</div>
+            </div>
+            <div class="path-container" id="path-nodes"></div>
+        </div>
 
-  <div class="modal-overlay" id="course-modal" onclick="closeModal(event, 'course-modal')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-      <div class="modal-title">Выберите курс</div>
-      <div class="course-option" onclick="selectCourse('python')"><span>🐍 Python</span></div>
-      <div class="course-option" onclick="selectCourse('english')"><span>🇬🇧 English</span></div>
-    </div>
-  </div>
+        <div id="t-lesson" class="tab">
+            <div class="lesson-top">
+                <button type="button" class="back-btn" onclick="backToPath()">✕</button>
+                <div class="prog-bg"><div class="prog-fill" id="lesson-prog"></div></div>
+            </div>
+            <div class="q-type" id="q-type-lbl">ПЕРЕВЕДИ ФРАЗУ</div>
+            <div class="q-box">
+                <div id="q-txt">Вопрос</div>
+                <button type="button" class="audio-btn" onclick="say()">🔊</button>
+            </div>
+            
+            <div id="btns"></div>
 
-  <div class="modal-overlay" id="lesson-modal" onclick="closeModal(event, 'lesson-modal')">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-      <div class="modal-title" id="lesson-modal-title">Задание</div>
+            <div id="build-box" style="display:none;">
+                <div class="build-area" id="build-selected"></div>
+                <div class="word-bank" id="build-bank"></div>
+                <button type="button" class="btn-green" id="check-build-btn" onclick="checkBuiltSentence()">ПРОВЕРИТЬ</button>
+            </div>
+
+            <div id="fb-msg" style="font-weight:800;font-size:16px;margin-top:10px;"></div>
+            <button type="button" id="next-btn" class="btn-green" onclick="nxt()" style="display:none;">ДАЛЬШЕ ➡️</button>
+        </div>
+
+        <div id="t-rank" class="tab">
+            <h2 style="margin-bottom:15px;">🏆 Золотая лига</h2>
+            <div class="shop-card"><span>🥇 Alex_Pro (B2)</span><b>1240 XP</b></div>
+            <div class="shop-card"><span>🥈 Maria_Eng (B1)</span><b>890 XP</b></div>
+            <div class="shop-card"><span>🥉 Max_Dev (A2)</span><b>540 XP</b></div>
