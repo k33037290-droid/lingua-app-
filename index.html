@@ -396,6 +396,404 @@ function renderSkins(){
   });
 }
 renderSkins();
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>FoxyLingua</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="lessons.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.top{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:2px solid #37464f;font-weight:800;font-size:14px;background:#131f24;z-index:20}
+.lvl{background:#1cb0f6;color:#fff;padding:3px 9px;border-radius:9px;font-size:12px}
+.main{flex:1;overflow-y:auto;padding:14px 14px 90px}
+.scr{display:none}.scr.act{display:block}
+.fox-bar{background:#202f36;border:2px solid #37464f;border-bottom-width:4px;border-radius:18px;padding:12px 14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.feed-btn{background:#ff9600;color:#131f24;border:none;border-radius:12px;padding:9px 12px;font-weight:800;font-size:13px;box-shadow:0 3px 0 #cc7800;white-space:nowrap}
+.unit-head{background:#58cc02;color:#fff;padding:15px 16px;border-radius:16px;box-shadow:0 5px 0 #46a302;margin:18px 0 22px;display:flex;justify-content:space-between;align-items:center}
+.unit-head.vip-u{background:#ffc800;color:#131f24;box-shadow:0 5px 0 #d9a600}
+.guide-btn{background:rgba(0,0,0,0.2);border:none;color:inherit;padding:8px 11px;border-radius:11px;font-weight:800;font-size:13px}
+.trail{display:flex;flex-direction:column;align-items:center;gap:20px;margin-bottom:16px}
+.node{display:flex;flex-direction:column;align-items:center}
+.cbtn{width:76px;height:70px;border-radius:50%;border:none;font-size:27px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.cbtn.done{background:#ffc800;color:#131f24;box-shadow:0 6px 0 #c99c00}
+.cbtn.cur{background:#58cc02;color:#fff;box-shadow:0 6px 0 #46a302}
+.cbtn.chest{background:#ce82ff;color:#fff;box-shadow:0 6px 0 #a55eea}
+.cbtn.lock{background:#263740;color:#566973;box-shadow:0 6px 0 #1b282f}
+.ring-tag{font-size:10px;font-weight:900;background:rgba(0,0,0,0.35);padding:1px 6px;border-radius:6px;margin-top:2px}
+.ntag{margin-top:7px;background:#202f36;border:2px solid #37464f;padding:4px 12px;border-radius:12px;font-size:13px;font-weight:800}
+.lbar{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.track{flex:1;height:14px;background:#263740;border-radius:10px;overflow:hidden}
+.fill{height:100%;width:10%;background:#58cc02;transition:width .3s}
+.mrow{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.bubble{background:#202f36;border:2px solid #37464f;border-radius:18px;padding:14px;flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:17px;font-weight:700}
+.spk{background:#1cb0f6;border:none;border-radius:12px;width:42px;height:42px;font-size:19px;color:#fff;flex-shrink:0}
+.opt{width:100%;background:#202f36;color:#fff;border:2px solid #37464f;border-bottom-width:5px;border-radius:15px;padding:14px 16px;font-size:16px;font-weight:700;text-align:left;margin-bottom:10px;display:block}
+.opt.ok{background:#1e3b17;border-color:#58cc02;color:#58cc02}
+.opt.no{background:#3b1717;border-color:#ff4b4b;color:#ff4b4b}
+.slots{min-height:52px;border-bottom:2px solid #37464f;padding:6px 0;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.tile{background:#202f36;color:#fff;border:2px solid #37464f;border-bottom-width:4px;border-radius:12px;padding:10px 14px;font-size:16px;font-weight:700}
+.tile.used{opacity:.2;pointer-events:none}
+.sheet{position:fixed;bottom:0;left:0;right:0;padding:18px 16px 24px;z-index:100;display:none;flex-direction:column;gap:10px;border-top:2px solid #37464f}
+.sheet.show{display:flex}.sheet.sok{background:#183114;color:#58cc02}.sheet.serr{background:#361616;color:#ff4b4b}
+.dbtn{width:100%;padding:15px;border:none;border-radius:15px;font-size:16px;font-weight:800;text-transform:uppercase}
+.bg{background:#58cc02;color:#fff;box-shadow:0 4px 0 #46a302}.br{background:#ff4b4b;color:#fff;box-shadow:0 4px 0 #d33131}
+.card{background:#202f36;border:2px solid #37464f;border-bottom-width:5px;border-radius:18px;padding:16px;margin-bottom:12px}
+.sbtn{background:#ffc800;color:#131f24;border:none;border-radius:12px;padding:10px 14px;font-weight:800;white-space:nowrap}
+.nav{position:fixed;bottom:0;left:0;right:0;height:66px;background:#131f24;border-top:2px solid #37464f;display:flex;justify-content:space-around;align-items:center;z-index:40}
+.nbtn{background:none;border:none;color:#afafaf;font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nbtn.act{color:#1cb0f6}
+</style>
+</head>
+<body>
+<div class="top">
+    <div><span class="lvl" id="hlvl" onclick="devTest()">A1</span></div>
+
+  <div style="color:#38bdf8;cursor:pointer" onclick="tab('shop',document.querySelectorAll('.nbtn'))">⭐ <span id="hstars">0</span></div>
+  <div style="color:#ff9600">🍖 <span id="hfull">100</span>%</div>
+  <div style="color:#ffc800">⚡ <span id="hxp">0</span></div>
+  <div style="color:#ff4b4b">❤️ <span id="hhp">5</span></div>
+</div>
+<div class="main">
+  <div id="s-test" class="scr act">
+    <div style="color:#1cb0f6;font-size:12px;font-weight:800;margin-bottom:6px">🎯 ТЕСТ НА УРОВЕНЬ (<span id="tstep">1/4</span>)</div>
+    <h2 style="font-size:19px;margin-bottom:14px">Ответь на 4 вопроса, чтобы Фокси определил твой уровень:</h2>
+    <div class="mrow"><div style="font-size:52px">🦊</div><div class="bubble"><div id="tq">1. Переведи: 'They are my friends'</div></div></div>
+    <div id="topts">
+      <button type="button" class="opt" onclick="pickT(0)">1. Они мои друзья</button>
+      <button type="button" class="opt" onclick="pickT(1)">2. Он мой брат</button>
+      <button type="button" class="opt" onclick="pickT(2)">3. Мы на работе</button>
+    </div>
+  </div>
+  <div id="s-path" class="scr">
+    <div class="fox-bar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:38px" id="fox-mood">🦊</div>
+        <div><div style="font-weight:800;font-size:14px" id="fox-stat">Фокси сыт (+50% XP)</div><div style="font-size:12px;color:#afafaf">В рюкзаке: 🍓 <b id="hfood">2</b> шт.</div></div>
+      </div>
+      <button type="button" class="feed-btn" onclick="feedFox()">🍖 Покормить</button>
+    </div>
+    <div id="chain-box"></div>
+  </div>
+  <div id="s-lesson" class="scr">
+    <div class="lbar"><button type="button" onclick="goChain()" style="background:none;border:none;color:#afafaf;font-size:22px;font-weight:800">✕</button><div class="track"><div class="fill" id="pfill"></div></div></div>
+    <h2 style="font-size:19px;margin-bottom:14px" id="qhead">Переведи</h2>
+    <div class="mrow"><div style="font-size:52px">🦊</div><div class="bubble"><div id="qtxt">Apple</div><button type="button" class="spk" onclick="spk()">🔊</button></div></div>
+    <div id="cchoices"></div>
+    <div id="cbuild" style="display:none"><div class="slots" id="bslots"></div><div class="pool" id="bpool"></div><button type="button" class="dbtn bg" id="bchk" onclick="chkBuild()">ПРОВЕРИТЬ</button></div>
+  </div>
+  <div id="s-rank" class="scr">
+    <h2 style="font-size:20px;margin-bottom:14px">🏆 Рубиновая лига</h2>
+    <div class="card" style="display:flex;justify-content:space-between"><span>🥇 Alex_Pro (B2)</span><b style="color:#ffc800">1840 XP</b></div>
+    <div class="card" style="display:flex;justify-content:space-between"><span>🥈 Maria_Eng (B1)</span><b style="color:#ffc800">1290 XP</b></div>
+    <div class="card" style="border-color:#1cb0f6;display:flex;justify-content:space-between"><span>🦊 Ты</span><b style="color:#1cb0f6" id="rxp">0 XP</b></div>
+  </div>
+  <div id="s-shop" class="scr">
+    <h2 style="font-size:20px;margin-bottom:14px">🛒 Магазин Super Foxy</h2>
+        <div class="card" style="border-color:#38bdf8">
+      <div style="font-weight:800;margin-bottom:8px">⭐ Пополнить баланс звёзд (На счету: <span id="sstars">0</span> ⭐)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button type="button" class="sbtn" style="background:#38bdf8" onclick="topUp(25)">+25 ⭐</button>
+        <button type="button" class="sbtn" style="background:#38bdf8" onclick="topUp(50)">+50 ⭐</button>
+        <button type="button" class="sbtn" style="background:#38bdf8" onclick="topUp(100)">+100 ⭐</button>
+        <button type="button" class="sbtn" style="background:#38bdf8" onclick="topUp(250)">+250 ⭐</button>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:#ffc800;display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div><b>👑 Super VIP (Все модули)</b><br><small style="color:#afafaf">Открывает все модули + бесконечные жизни ❤️ и еда 🍖</small></div>
+      <button type="button" class="sbtn" onclick="buy('vip')">50 ⭐️</button>
+    </div>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div><b>🍓 Набор еды для Фокси (5 шт.)</b><br><small style="color:#afafaf">Вкусняшки за 60 XP для поддержания бонуса +50% XP</small></div>
+      <button type="button" class="sbtn" style="background:#ff9600" onclick="buyFoodXP()">60 ⚡</button>
+    </div>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div><b>❄️ Заморозка + 5 жизней</b><br><small style="color:#afafaf">Защита серии 🔥 и полное восстановление ❤️</small></div>
+      <button type="button" class="sbtn" onclick="buy('freeze')">15 ⭐️</button>
+    </div>
+   <h3 style="font-size:17px;margin:16px 0 10px">🎁 Кейсы с призами</h3>
+    <div id="case-box" class="card" style="display:none;text-align:center;border-color:#ffc800;background:#18242a">
+      <div style="font-size:12px;color:#afafaf;font-weight:800;margin-bottom:6px">🎰 РУЛЕТКА ПРИЗОВ...</div>
+      <div id="case-spin" style="font-size:32px;padding:12px;background:#131f24;border-radius:14px;border:2px solid #37464f;font-weight:900">🎁</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div class="card" style="text-align:center;margin:0;border-color:#1cb0f6">
+        <div style="font-size:38px">📦</div>
+        <div style="font-weight:800;margin:6px 0">Обычный кейс</div>
+        <div style="font-size:11px;color:#afafaf;margin-bottom:8px">Еда, XP, Панда 🐼</div>
+        <button type="button" class="sbtn" style="width:100%;background:#1cb0f6;color:#fff" onclick="openCase('norm')">200 ⚡</button>
+      </div>
+      <div class="card" style="text-align:center;margin:0;border-color:#ffc800">
+        <div style="font-size:38px">👑</div>
+        <div style="font-weight:800;margin:6px 0">Легендарный</div>
+        <div style="font-size:11px;color:#afafaf;margin-bottom:8px">VIP, Дракон 🐲, ⭐</div>
+        <button type="button" class="sbtn" style="width:100%;background:#ce82ff;color:#fff" onclick="openCase('leg')">25 ⭐</button>
+      </div>
+    </div> 
+        <h3 style="font-size:17px;margin:16px 0 10px">🎭 Образы Лисёнка</h3>
+    <div id="shop-skins" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+
+  </div>
+  <div id="s-inv" class="scr">
+    <h2 style="font-size:20px;margin-bottom:14px">🎒 Мой инвентарь</h2>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+      <div><b>🍓 Вкусняшки для Фокси</b><br><small style="color:#afafaf">Восстанавливают сытость (+35%)</small></div>
+      <div style="display:flex;align-items:center;gap:8px"><b id="ifood" style="font-size:16px">2 шт.</b><button type="button" class="sbtn" style="background:#ff9600" onclick="feedFox()">Покормить</button></div>
+    </div>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+      <div><b>❄️ Заморозка серии</b><br><small style="color:#afafaf">Защищает ударный режим 🔥</small></div>
+      <b id="ifrz" style="font-size:16px;color:#38bdf8">0 шт.</b>
+    </div>
+    <h3 style="font-size:17px;margin:16px 0 10px">🎭 Образы Лисёнка</h3>
+    <div id="inv-skins" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+  </div>
+</div>
+<div class="sheet" id="sheet"><div style="font-size:19px;font-weight:800" id="stitle">✅ Верно!</div><div style="font-size:14px;font-weight:700" id="ssub"></div><button type="button" class="dbtn bg" id="sbtn" onclick="nxt()">ПРОДОЛЖИТЬ</button></div>
+<div class="nav" id="nav">
+  <button type="button" class="nbtn" onclick="tab('inv',this)"><span style="font-size:20px">🎒</span>Инвентарь</button>
+  <button type="button" class="nbtn act" onclick="tab('path',this)"><span style="font-size:20px">🏠</span>Тропа</button>
+  <button type="button" class="nbtn" onclick="tab('rank',this)"><span style="font-size:20px">🏆</span>Лига</button>
+  <button type="button" class="nbtn" onclick="tab('shop',this)"><span style="font-size:20px">🛒</span>Магазин</button>
+</div>
+<script>
+var tg = window.Telegram ? window.Telegram.WebApp : null;
+if (tg) tg.expand();
+var tQs = [
+  {q:"1. Переведи: 'They are my friends'",o:["1. Они мои друзья","2. Он мой брат","3. Мы на работе"],a:0,p:1},
+  {q:"2. Вставь: 'She ___ to school every day'",o:["1. go","2. goes","3. going"],a:1,p:2},
+  {q:"3. Как сказать 'Я живу здесь с 2020'?",o:["1. I live here since 2020","2. I have lived here since 2020","3. I am living in 2020"],a:1,p:3},
+  {q:"4. Вставь: 'If I ___ you, I would accept it'",o:["1. am","2. was","3. were"],a:2,p:4}
+];
+var xp=0,hp=5,vip=false,frz=0,lvl='',full=100,food=2,prog={},ti=0,ts=0,cu=0,cs=0,qi=0,pt=[];
+function save(){
+  var d=JSON.stringify({xp:xp,hp:hp,vip:vip,frz:frz,lvl:lvl,full:full,food:food,prog:prog});
+  try{localStorage.setItem('fx_v2',d);}catch(e){}
+  if(tg&&tg.CloudStorage)tg.CloudStorage.setItem('fx_v2',d);
+}
+function updTop(){
+  document.getElementById('hxp').innerText=xp;
+  document.getElementById('rxp').innerText=xp+' XP';
+  document.getElementById('hhp').innerText=vip?'♾️':hp;
+  document.getElementById('hfull').innerText=vip?'100':full;
+  document.getElementById('hfood').innerText=vip?'♾️':food;
+  if(document.getElementById('ifood'))document.getElementById('ifood').innerText=vip?'♾️':(food+' шт.');
+if(document.getElementById('ifrz'))document.getElementById('ifrz').innerText=frz+' шт.';
+  var fm=document.getElementById('fox-mood'),fs=document.getElementById('fox-stat');
+  if(vip||full>=80){fm.innerText='🦊';fs.innerText='Фокси сыт (+50% XP бонус!)';}
+  else if(full>=30){fm.innerText='🦊';fs.innerText='Фокси в норме (корми для +50% XP)';}
+  else{fm.innerText='🥺';fs.innerText='Фокси голоден! Покорми перед уроком';}
+}
+function load(raw){
+  if(!raw)return;
+  try{
+    var d=JSON.parse(raw);
+    xp=d.xp||0;hp=(d.hp!==undefined)?d.hp:5;vip=!!d.vip;frz=d.frz||0;
+    lvl=d.lvl||'';full=(d.full!==undefined)?d.full:100;food=(d.food!==undefined)?d.food:2;prog=d.prog||{};
+    updTop();
+    if(lvl){document.getElementById('hlvl').innerText=lvl;goChain();}
+  }catch(e){}
+}
+function show(id){
+  var s=document.querySelectorAll('.scr');
+  for(var i=0;i<s.length;i++)s[i].classList.remove('act');
+  document.getElementById(id).classList.add('act');
+  document.getElementById('sheet').classList.remove('show');
+  document.getElementById('nav').style.display=(id==='s-lesson')?'none':'flex';
+}
+function rTest(){
+  var q=tQs[ti];
+  document.getElementById('tstep').innerText=(ti+1)+'/4';
+  document.getElementById('tq').innerText=q.q;
+  var b=document.getElementById('topts');b.innerHTML='';
+  for(var i=0;i<q.o.length;i++){
+    (function(x){
+      var btn=document.createElement('button');
+      btn.type='button';btn.className='opt';btn.innerText=q.o[x];
+      btn.onclick=function(){pickT(x);};b.appendChild(btn);
+    })(i);
+  }
+}
+function pickT(x){
+  if(x===tQs[ti].a)ts+=tQs[ti].p;ti++;
+  if(ti<tQs.length)rTest();
+  else{
+    lvl=ts>=8?'B2':(ts>=5?'B1':(ts>=2?'A2':'A1'));
+    document.getElementById('hlvl').innerText=lvl;save();
+    alert('🦊 Фокси определил твой уровень: '+lvl+'!');goChain();
+  }
+}
+function feedFox(){
+  if(vip){alert('👑 С Super VIP Фокси всегда сыт на 100%!');return;}
+  if(full>=100){alert('🦊 Фокси уже полностью сыт!');return;}
+  if(food<=0){alert('🍓 В рюкзаке закончилась еда! Купи набор за 60 XP в Магазине.');return;}
+  food--;full=Math.min(100,full+35);updTop();save();
+  alert('🍖 Ням-ням! Сытость Фокси: '+full+'%');
+}
+function buyFoodXP(){
+  if(xp<60){alert('⚡ Нужно 60 XP! Пройди ещё пару уроков.');return;}
+  xp-=60;food+=5;updTop();save();alert('🍓 Куплено 5 вкусняшек для Фокси!');
+}
+function goChain(){
+  show('s-path');updTop();
+  var box=document.getElementById('chain-box');box.innerHTML='';
+  if(typeof UNITS==='undefined')return;
+  var cv=[0,-42,0,42];
+  for(var u=0;u<UNITS.length;u++){(function(ui){
+    var U=UNITS[ui],lkU=U.vip&&!vip;
+    var hd=document.createElement('div');
+    hd.className='unit-head'+(U.vip?' vip-u':'');
+    hd.innerHTML='<div><div style="font-size:11px">'+U.lvl+(lkU?' • 🔒 VIP':'')+'</div><div style="font-size:16px">'+U.title+'</div></div><button type="button" class="guide-btn">📖 Правила</button>';
+    hd.querySelector('button').onclick=function(){alert('📖 '+U.title+'\n\n'+U.guide);};
+    box.appendChild(hd);
+    var tr=document.createElement('div');tr.className='trail';
+    for(var s=0;s<U.steps.length;s++){(function(si){
+      var st=U.steps[si],key=U.id+'_'+si,curLv=prog[key]||0,maxLv=st.stepsTotal||1;
+      var isDone=curLv>=maxLv,prevDone=(si===0)||((prog[U.id+'_'+(si-1)]||0)>=(U.steps[si-1].stepsTotal||1));
+      var unl=!lkU&&prevDone;
+      var nd=document.createElement('div');nd.className='node';nd.style.transform='translateX('+cv[si%4]+'px)';
+      var bt=document.createElement('button');bt.type='button';
+      if(st.type==='chest'){
+        bt.className='cbtn '+(isDone?'done':(unl?'chest':'lock'));bt.innerHTML=isDone?'✅':'🎁';
+        bt.onclick=function(){
+          if(lkU){if(confirm('👑 Super VIP (50 ⭐️)?'))buy('vip');return;}
+          if(!unl){alert('🔒 Сначала заверши прошлый кружок!');return;}
+          if(isDone){alert('🎁 Этот сундук уже открыт!');return;}
+          prog[key]=1;xp+=st.xpBonus;food+=st.foodBonus;updTop();save();
+          alert('🎁 +'+st.xpBonus+' XP и +'+st.foodBonus+' 🍓!');goChain();
+        };
+      }else{
+        bt.className='cbtn '+(isDone?'done':(unl?'cur':'lock'));
+        bt.innerHTML=(isDone?'⭐':(unl?'🦊':'🔒'))+'<span class="ring-tag">'+curLv+'/'+maxLv+'</span>';
+        bt.onclick=function(){
+          if(lkU){if(confirm('👑 Super VIP (50 ⭐️)?'))buy('vip');return;}
+          if(!unl){alert('🔒 Сначала пройди прошлый этап!');return;}
+          if(!vip&&hp<=0){alert('💔 Закончились жизни!');return;}
+          if(!vip&&full<20){alert('🥺 Фокси голоден! Нажми «🍖 Покормить».');return;}
+          cu=ui;cs=si;qi=0;show('s-lesson');rQ();
+        };
+      }
+      var tg=document.createElement('div');tg.className='ntag';tg.innerText=st.name;
+      nd.appendChild(bt);nd.appendChild(tg);tr.appendChild(nd);
+    })(s);}
+    box.appendChild(tr);
+  })(u);}
+}
+function rQ(){
+  var q=UNITS[cu].steps[cs].qs[qi];
+  document.getElementById('pfill').style.width=Math.max(10,Math.round(qi/UNITS[cu].steps[cs].qs.length*100))+'%';
+  document.getElementById('qhead').innerText=q.h;document.getElementById('qtxt').innerText=q.q;
+  document.getElementById('sheet').classList.remove('show');
+  var cb=document.getElementById('cchoices'),bb=document.getElementById('cbuild');
+  if(q.t==='b'){cb.style.display='none';bb.style.display='block';document.getElementById('bchk').style.display='block';pt=[];rTiles(q);}
+  else{bb.style.display='none';cb.style.display='block';cb.innerHTML='';for(var i=0;i<q.o.length;i++){(function(x){var bt=document.createElement('button');bt.type='button';bt.className='opt';bt.innerText=(x+1)+'. '+q.o[x];bt.onclick=function(){chkC(x,bt);};cb.appendChild(bt);})(i);}}
+}
+function fb(ok,sub){
+  var sh=document.getElementById('sheet');sh.className='sheet show '+(ok?'sok':'serr');
+  var mult=(vip||full>=80)?1.5:1;
+  document.getElementById('stitle').innerText=ok?('🦊 Верно! +'+Math.round(15*mult)+' XP'):'❌ Неправильно';
+  document.getElementById('ssub').innerText=sub||'';document.getElementById('sbtn').className='dbtn '+(ok?'bg':'br');
+}
+function chkC(x,el){
+  var q=UNITS[cu].steps[cs].qs[qi],all=document.querySelectorAll('#cchoices .opt');
+  for(var i=0;i<all.length;i++)all[i].disabled=true;
+  var mult=(vip||full>=80)?1.5:1;
+  if(x===q.a){el.classList.add('ok');xp+=Math.round(15*mult);spk();fb(true,'');}
+  else{el.classList.add('no');all[q.a].classList.add('ok');if(!vip)hp=Math.max(0,hp-1);fb(false,'Правильно: '+q.o[q.a]);}
+  updTop();save();
+}
+function rTiles(q){
+  var sl=document.getElementById('bslots'),pl=document.getElementById('bpool');sl.innerHTML='';pl.innerHTML='';
+  for(var i=0;i<pt.length;i++){(function(pi){var t=document.createElement('button');t.type='button';t.className='tile';t.innerText=q.w[pt[pi]];t.onclick=function(){pt.splice(pi,1);rTiles(q);};sl.appendChild(t);})(i);}
+  for(var j=0;j<q.w.length;j++){(function(wi){var t=document.createElement('button');t.type='button';t.className='tile'+(pt.indexOf(wi)!==-1?' used':'');t.innerText=q.w[wi];t.onclick=function(){pt.push(wi);rTiles(q);};pl.appendChild(t);})(j);}
+}
+function chkBuild(){
+  var q=UNITS[cu].steps[cs].qs[qi],res=[];for(var i=0;i<pt.length;i++)res.push(q.w[pt[i]]);
+  document.getElementById('bchk').style.display='none';var mult=(vip||full>=80)?1.5:1;
+  if(res.join(' ')===q.ans.join(' ')){xp+=Math.round(20*mult);spk();fb(true,'Идеально!');}
+  else{if(!vip)hp=Math.max(0,hp-1);fb(false,'Правильно: '+q.ans.join(' '));}
+  updTop();save();
+}
+function nxt(){
+  var st=UNITS[cu].steps[cs];qi++;
+  if(qi<st.qs.length)rQ();
+  else{var key=UNITS[cu].id+'_'+cs;prog[key]=Math.min(st.stepsTotal||1,(prog[key]||0)+1);if(!vip)full=Math.max(0,full-20);xp+=25;updTop();save();alert('🎉 Этап '+prog[key]+'/'+(st.stepsTotal||1)+' пройден!');goChain();}
+}
+function spk(){if('speechSynthesis' in window){var u=new SpeechSynthesisUtterance(UNITS[cu].steps[cs].qs[qi].s);u.lang='en-US';speechSynthesis.speak(u);}}
+function tab(t,el){var bs=document.querySelectorAll('.nbtn');for(var i=0;i<bs.length;i++)bs[i].classList.remove('act');el.classList.add('act');if(t==='path')goChain();else show('s-'+t);}
+var stars=0;
+var SLUGS={
+  25:'https://t.me/$AXEIHMXSCEgNGAAA-QtHj9NLseU',
+  50:'https://t.me/$B_kc-8XSCEgOGAAAfxsDO8eOo40',
+  100:'https://t.me/$AHPhCMXSCEgPGAAAyxOkjmH_F8A',
+  250:'https://t.me/$KHUp-cXSCEgQGAAAFMllqAfzVOg'
+};
+function topUp(amt){
+  var u=SLUGS[amt];
+  if(tg&&tg.openInvoice){
+    tg.openInvoice(u,function(st){
+      if(st==='paid'){stars+=amt;syncStars();alert('✅ Начислено +'+amt+' ⭐!');}
+    });
+  }else if(tg&&tg.openTelegramLink)tg.openTelegramLink(u);
+  else window.location.href=u;
+}
+function syncStars(){
+  localStorage.setItem('fx_stars',stars);
+  if(document.getElementById('hstars'))document.getElementById('hstars').innerText=stars;
+  if(document.getElementById('sstars'))document.getElementById('sstars').innerText=stars;
+}
+stars=parseInt(localStorage.getItem('fx_stars')||'0',10);
+syncStars();
+function buy(it){
+  var cost=(it==='vip')?50:15;
+  if(stars<cost){alert('Недостаточно звёзд! Нужно '+cost+' ⭐. Пополни баланс выше.');return;}
+  stars-=cost;syncStars();
+  if(it==='vip'){vip=true;updTop();save();alert('👑 Super VIP активирован!');goChain();}
+  else{frz+=1;hp=5;updTop();save();alert('❄️ Заморозка + 5 жизней куплены!');}
+}
+var SKINS=[
+  {id:'fox',ico:'🦊',name:'Классик',cur:'free',cost:0},
+  {id:'panda',ico:'🐼',name:'Панда',cur:'xp',cost:500},
+  {id:'tiger',ico:'🐯',name:'Тигр',cur:'xp',cost:1200},
+  {id:'wolf',ico:'🐺',name:'Волк',cur:'xp',cost:2000},
+  {id:'lion',ico:'🦁',name:'Лев VIP',cur:'star',cost:20},
+  {id:'dragon',ico:'🐲',name:'Дракон',cur:'star',cost:50}
+];
+var mySkins=JSON.parse(localStorage.getItem('fx_skins')||'["fox"]');
+var curSkin=localStorage.getItem('fx_cur')||'fox';
+function getIco(){for(var i=0;i<SKINS.length;i++)if(SKINS[i].id===curSkin)return SKINS[i].ico;return '🦊';}
+function buySkin(id){
+  var s=SKINS.find(function(x){return x.id===id;});if(!s)return;
+  if(mySkins.indexOf(id)!==-1){curSkin=id;localStorage.setItem('fx_cur',id);renderSkins();updTop();return;}
+  if(s.cur==='xp'){if(xp<s.cost){alert('Нужно '+s.cost+' ⚡!');return;}xp-=s.cost;}
+  else if(s.cur==='star'){if(stars<s.cost){alert('Нужно '+s.cost+' ⭐!');return;}stars-=s.cost;syncStars();}
+  mySkins.push(id);curSkin=id;
+  localStorage.setItem('fx_skins',JSON.stringify(mySkins));localStorage.setItem('fx_cur',id);
+  updTop();save();renderSkins();alert('🎉 Образ «'+s.name+'» надет!');
+}
+
+function renderSkins(){
+  var inv=document.getElementById('inv-skins'),shp=document.getElementById('shop-skins');
+  if(inv)inv.innerHTML='';if(shp)shp.innerHTML='';
+  SKINS.forEach(function(s){
+    var has=mySkins.indexOf(s.id)!==-1,eq=curSkin===s.id;
+    var lbl=has?(eq?'✅ Надет':'Надеть'):('🔒 '+s.cost+(s.cur==='xp'?' ⚡':' ⭐'));
+    if(inv){
+      inv.innerHTML+='<div class="card" style="text-align:center;margin:0;opacity:'+(has?'1':'0.55')+';border-color:'+(eq?'#58cc02':'#37464f')+'"><div style="font-size:38px">'+s.ico+'</div><div style="font-weight:800;margin:6px 0">'+s.name+'</div><button type="button" class="sbtn" style="width:100%;background:'+(has?(eq?'#58cc02':'#1cb0f6'):'#263740')+';color:'+(has?'#fff':'#afafaf')+'" onclick="buySkin(\''+s.id+'\')">'+lbl+'</button></div>';
+    }
+    if(shp){
+            var slbl=(s.cur==='free')?'Бесплатно':((has?'✅ ':'')+s.cost+(s.cur==='xp'?' ⚡':' ⭐'));
+
+      var bg=has?(eq?'#58cc02':'#1cb0f6'):(s.cur==='xp'?'#1cb0f6':'#ce82ff');
+      shp.innerHTML+='<div class="card" style="text-align:center;margin:0;border-color:'+(eq?'#58cc02':'#37464f')+'"><div style="font-size:38px">'+s.ico+'</div><div style="font-weight:800;margin:6px 0">'+s.name+'</div><button type="button" class="sbtn" style="width:100%;background:'+bg+';color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.4)" onclick="buySkin(\''+s.id+'\')">'+slbl+'</button></div>';
+    }
+  });
+}
+renderSkins();
 var spinning=false;
 function openCase(type){
   if(spinning)return;
@@ -429,6 +827,22 @@ function openCase(type){
       setTimeout(function(){alert('🎁 Выпал приз: '+r.ico+'!');},150);
     }
   },90);
+}
+ function devTest(){
+  var uid=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)?tg.initDataUnsafe.user.id:0;
+  if(uid!==8426837997)return;
+  var pin=prompt('Пароль разработчика:');
+  if(pin==='2212'){
+    stars+=100;xp+=1000;
+    syncStars();updTop();save();
+    alert('🛠 Начислено +100 ⭐ и +1000 ⚡!');
+  }
+ }   
+try{load(localStorage.getItem('fx_v2'));}catch(e){}
+if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
+</script>
+</body>
+</html>
 }
  function devTest(){
   var uid=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)?tg.initDataUnsafe.user.id:0;
