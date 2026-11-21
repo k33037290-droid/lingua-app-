@@ -79,6 +79,26 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
       </div>
       <button type="button" class="feed-btn" onclick="feedFox()">🍖 Покормить</button>
     </div>
+      <div id="wheel-banner" class="card" style="border-color:#ce82ff;display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:12px 14px" onclick="toggleWheel()">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:32px">🎡</div>
+        <div><div style="font-weight:800;font-size:14px">Колесо Фортуны</div><div id="w-status" style="font-size:12px;color:#58cc02;font-weight:700">✨ Бесплатный спин готов!</div></div>
+      </div>
+      <div style="background:#ce82ff;color:#fff;padding:7px 11px;border-radius:11px;font-weight:800;font-size:12px">Крутить</div>
+    </div>
+    <div id="wheel-panel" class="card" style="display:none;border-color:#ce82ff;background:#18242a;text-align:center">
+      <div style="font-size:24px;margin-bottom:-12px;position:relative;z-index:5">🔻</div>
+      <div id="w-disc" style="width:230px;height:230px;margin:0 auto 12px;border-radius:50%;border:5px solid #ffc800;background:conic-gradient(#58cc02 0deg 45deg,#1cb0f6 45deg 90deg,#ce82ff 90deg 135deg,#ff9600 135deg 180deg,#ff4b4b 180deg 225deg,#00b894 225deg 270deg,#0984e3 270deg 315deg,#e17055 315deg 360deg);position:relative;transition:transform 3.2s cubic-bezier(0.15,0.85,0.2,1);box-shadow:0 0 22px rgba(206,130,255,0.35)">
+        <div id="w-slots"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:48px;height:48px;background:#131f24;border-radius:50%;border:3px solid #ffc800;display:flex;align-items:center;justify-content:center;font-size:22px;z-index:3">🦊</div>
+      </div>
+      <div id="w-res" style="font-size:15px;font-weight:800;margin-bottom:10px;color:#ffc800">Выбери колесо и крути</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <button type="button" id="wbtn-free" class="sbtn" style="background:#58cc02;color:#fff;padding:10px 6px;font-size:12px" onclick="spinWheel('free')">🎁 Бесплатно<br><small>раз в 24ч</small></button>
+        <button type="button" class="sbtn" style="background:#1cb0f6;color:#fff;padding:10px 6px;font-size:12px" onclick="spinWheel('xp')">⚡ Серебро<br><small>300 XP</small></button>
+        <button type="button" class="sbtn" style="background:#ffc800;color:#131f24;padding:10px 6px;font-size:12px" onclick="spinWheel('star')">👑 Золото<br><small>15 ⭐</small></button>
+      </div>
+    </div>
     <div id="chain-box"></div>
   </div>
   <div id="s-lesson" class="scr">
