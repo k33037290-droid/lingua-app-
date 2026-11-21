@@ -583,6 +583,22 @@ chk=function(idx){
     updTop();save();
   }
 };
+  function toggleWallet(){
+  var w=document.getElementById('wallet-drop'),a=document.getElementById('w-arr');
+  if(!w)return;
+  var open=(w.style.display==='none');
+  w.style.display=open?'block':'none';
+  if(a)a.innerText=open?'▲':'▼';
+  updWalletMini();
+}
+function updWalletMini(){
+  if(document.getElementById('mini-stars'))document.getElementById('mini-stars').innerText=stars;
+  if(document.getElementById('mini-xp'))document.getElementById('mini-xp').innerText=xp;
+  if(document.getElementById('hcups'))document.getElementById('hcups').innerText=(typeof leagueXp!=='undefined'?leagueXp:0);
+}
+var _wUpd=updTop;
+updTop=function(){_wUpd();updWalletMini();};
+setTimeout(updWalletMini,250);
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
 if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
 </script>
