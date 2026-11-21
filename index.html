@@ -73,7 +73,7 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
     <div class="fox-bar">
       <div style="display:flex;align-items:center;gap:9px">
         <div style="font-size:36px" id="fox-mood">🦊</div>
-        <div><div style="font-weight:800;font-size:13px" id="fox-stat">Фокси сыт (+50% XP)</div><div style="font-size:11px;color:#afafaf">Еда: 🍓 <b id="hfood">2</b> | Колесо: <span style="color:#1cb0f6;text-decoration:underline" onclick="spinWheel()">🎡 Крутить</span></div></div>
+        <div><div style="font-weight:800;font-size:13px" id="fox-stat">Фокси сыт (+50% XP)</div><div style="font-size:11px;color:#afafaf">Еда: 🍓 <b id="hfood">2</b> | <span style="color:#1cb0f6;text-decoration:underline" onclick="spinWheel()">🎡 Колесо</span></div></div>
       </div>
       <button type="button" class="feed-btn" onclick="feedFox()">🍖 Покормить</button>
     </div>
@@ -106,22 +106,23 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
     </div>
     <div id="rank-list"></div>
     <button type="button" class="dbtn bb" id="top200-btn" style="margin-top:8px" onclick="toggleTop200()">📜 ПОКАЗАТЬ ВЕСЬ ТОП-200</button>
+    <div id="pvp-hist" style="margin-top:14px"></div>
   </div>
   <div id="s-shop" class="scr">
     <h2 style="font-size:19px;margin-bottom:12px">🛒 Магазин и Скины</h2>
     <div class="card" style="border-color:#ffc800;display:flex;justify-content:space-between;align-items:center;gap:10px">
-      <div><b>👑 Super VIP (Все модули)</b><br><small style="color:#afafaf">Все уровни + безлимит жизней ❤️, еды 🍖 и все скины</small></div>
+      <div><b>👑 Super VIP (Все модули)</b><br><small style="color:#afafaf">Все уровни + безлимит жизней ❤️, еды 🍖 и скины</small></div>
       <button type="button" class="sbtn" onclick="buy('vip')">50 ⭐️</button>
     </div>
     <div class="card" style="border-color:#1cb0f6;display:flex;justify-content:space-between;align-items:center;gap:10px">
-      <div><b>🎁 Пригласи друга (+50 XP)</b><br><small style="color:#afafaf">Отправь ссылку другу в Telegram</small></div>
+      <div><b>🎁 Пригласи друга (+25 XP)</b><br><small style="color:#afafaf">Поделись ссылкой в Telegram</small></div>
       <button type="button" class="sbtn" style="background:#1cb0f6;color:#fff" onclick="shareRef()">📤 ЗВАТЬ</button>
     </div>
     <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
       <div><b>🍓 Еда для Фокси (5 шт.)</b><br><small style="color:#afafaf">Бонус +50% XP за сытого лиса</small></div>
       <button type="button" class="sbtn" style="background:#ff9600" onclick="buyFoodXP()">60 ⚡</button>
     </div>
-        <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
       <div><b>❄️ Заморозка + 5 жизней</b><br><small style="color:#afafaf">Защита серии и восстановление ❤️</small></div>
       <button type="button" class="sbtn" onclick="buy('freeze')">15 ⭐️</button>
     </div>
@@ -135,60 +136,236 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
   <button type="button" class="nbtn" onclick="tab('rank',this)"><span style="font-size:19px">🏆</span>Лига</button>
   <button type="button" class="nbtn" onclick="tab('shop',this)"><span style="font-size:19px">🛒</span>Магазин</button>
 </div>
-
 <script>
-  window.onerror=function(m,u,l){alert('Ошибка на строке '+l+': '+m);};
-var tg=window.Telegram?window.Telegram.WebApp:null;if(tg)tg.expand();
-var tQs=[
-{q:"1. Переведи: 'They are my friends'",o:["1. Они мои друзья","2. Он мой брат","3. Мы на работе"],a:0,p:1},
-{q:"2. Вставь: 'She ___ to school every day'",o:["1. go","2. goes","3. going"],a:1,p:2},
-{q:"3. Как сказать 'Я живу здесь с 2020'?",o:["1. I live here since 2020","2. I have lived here since 2020","3. I am living in 2020"],a:1,p:3},
-{q:"4. Вставь: 'If I ___ you, I would accept it'",o:["1. am","2. was","3. were"],a:2,p:4}
+var tg = window.Telegram ? window.Telegram.WebApp : null;
+if (tg) tg.expand();
+var tQs = [
+  {q:"1. Переведи: 'They are my friends'",o:["1. Они мои друзья","2. Он мой брат","3. Мы на работе"],a:0,p:1},
+  {q:"2. Вставь: 'She ___ to school every day'",o:["1. go","2. goes","3. going"],a:1,p:2},
+  {q:"3. Как сказать 'Я живу здесь с 2020'?",o:["1. I live here since 2020","2. I have lived here since 2020","3. I am living in 2020"],a:1,p:3},
+  {q:"4. Вставь: 'If I ___ you, I would accept it'",o:["1. am","2. was","3. were"],a:2,p:4}
 ];
-var SKINS=[
-{id:"fox",ico:"🦊",name:"Классический Фокси",cost:0},
-{id:"cool",ico:"🕶️",name:"Фокси-Хакер",cost:80},
-{id:"king",ico:"👑",name:"Король Английского",cost:150},
-{id:"bot",ico:"🤖",name:"Кибер-Лис 2077",cost:250}
+var SKINS = [
+  {id:"fox",ico:"🦊",name:"Классический Фокси",cost:0},
+  {id:"cool",ico:"🕶️",name:"Фокси-Хакер",cost:80},
+  {id:"king",ico:"👑",name:"Король Английского",cost:150},
+  {id:"bot",ico:"🤖",name:"Кибер-Лис 2077",cost:250}
 ];
-var PVP_POOL=[
-{q:"Переведи: 'Never give up'",o:["Никогда не сдавайся","Никогда не спи","Всегда побеждай"],a:0},
-{q:"Что значит сленг 'No cap'?",o:["Без кепки","Без вранья / реально","Нет денег"],a:1},
-{q:"Вставь: 'If I ___ you, I would go'",o:["am","was","were"],a:2},
-{q:"Переведи: 'Piece of cake'",o:["Пара пустяков","Кусок торта","Сложная задача"],a:0},
-{q:"Что означает 'Deadline'?",o:["Крайний срок сдачи","Отпуск","Премия"],a:0},
-{q:"Переведи: 'To spill the beans'",o:["Проболтаться / выдать секрет","Приготовить ужин","Просыпать фасоль"],a:0},
-{q:"Что значит 'Ghosting'?",o:["Внезапно пропасть из чата","Смотреть ужастик","Притворяться"],a:0}
+var PVP_POOL = [
+  {q:"Переведи: 'Never give up'",o:["Никогда не сдавайся","Никогда не спи","Всегда побеждай"],a:0},
+  {q:"Что значит сленг 'No cap'?",o:["Без кепки","Без вранья / реально","Нет денег"],a:1},
+  {q:"Вставь: 'If I ___ you, I would go'",o:["am","was","were"],a:2},
+  {q:"Переведи: 'Piece of cake'",o:["Пара пустяков","Кусок торта","Сложная задача"],a:0},
+  {q:"Что означает 'Deadline'?",o:["Крайний срок сдачи","Отпуск","Премия"],a:0},
+  {q:"Переведи: 'To spill the beans'",o:["Проболтаться / выдать секрет","Приготовить ужин","Просыпать фасоль"],a:0},
+  {q:"Что значит 'Ghosting'?",o:["Внезапно пропасть из чата","Смотреть ужастик","Притворяться"],a:0}
 ];
-
 var xp=0,hp=5,vip=false,frz=0,lvl='',full=100,food=2,prog={},skin='fox',owned=['fox'],wheelDay='',hist=[];
 var ti=0,ts=0,cu=0,cs=0,qi=0,pt=[],qList=[],combo=0,show200=false;
 var pQs=[],pIdx=0,pMe=0,pBot=0,pTmr=null,pSec=10,pRival='';
 
-function getSkinIco(){for(var i=0;i<SKINS.length;i++)if(SKINS[i].id===skin)return SKINS[i].ico;return '🦊';}
-function save(){var d=JSON.stringify({xp:xp,hp:hp,vip:vip,frz:frz,lvl:lvl,full:full,food:food,prog:prog,skin:skin,owned:owned,wheelDay:wheelDay,hist:hist});try{localStorage.setItem('fx_v3',d);}catch(e){}if(tg&&tg.CloudStorage){tg.CloudStorage.setItem('fx_v3',d);}}
-function updTop(){var ico=getSkinIco();document.getElementById('hxp').innerText=xp;document.getElementById('hhp').innerText=vip?'♾️':hp;document.getElementById('hfull').innerText=vip?'100':full;document.getElementById('hfood').innerText=vip?'♾️':food;document.getElementById('l-fox').innerText=ico;var fm=document.getElementById('fox-mood'),fs=document.getElementById('fox-stat');if(vip||full>=80){fm.innerText=ico;fs.innerText='Фокси сыт (+50% XP бонус!)';}else if(full>=30){fm.innerText=ico;fs.innerText='Фокси в норме (корми для +50% XP)';}else{fm.innerText='🥺';fs.innerText='Фокси голоден! Покорми перед уроком';}}
-function load(raw){if(!raw)return;try{var d=JSON.parse(raw);xp=d.xp||0;hp=(d.hp!==undefined)?d.hp:5;vip=!!d.vip;frz=d.frz||0;lvl=d.lvl||'';full=(d.full!==undefined)?d.full:100;food=(d.food!==undefined)?d.food:2;prog=d.prog||{};skin=d.skin||'fox';owned=d.owned||['fox'];wheelDay=d.wheelDay||'';hist=d.hist||[];updTop();if(lvl){document.getElementById('hlvl').innerText=lvl;goChain();}}catch(e){}}
-function show(id){clearInterval(pTmr);var s=document.querySelectorAll('.scr');for(var i=0;i<s.length;i++)s[i].classList.remove('act');document.getElementById(id).classList.add('act');document.getElementById('sheet').classList.remove('show');document.getElementById('nav').style.display=(id==='s-lesson'||id==='s-pvp')?'none':'flex';}
-function rTest(){var q=tQs[ti];document.getElementById('tstep').innerText=(ti+1)+'/4';document.getElementById('tq').innerText=q.q;var b=document.getElementById('topts');b.innerHTML='';for(var i=0;i<q.o.length;i++){(function(x){var btn=document.createElement('button');btn.type='button';btn.className='opt';btn.innerText=q.o[x];btn.onclick=function(){pickT(x);};b.appendChild(btn);})(i);}}
-function pickT(x){if(x===tQs[ti].a)ts+=tQs[ti].p;ti++;if(ti<tQs.length)rTest();else{lvl=ts>=8?'B2':(ts>=5?'B1':(ts>=2?'A2':'A1'));document.getElementById('hlvl').innerText=lvl;save();alert('🦊 Фокси определил твой уровень: '+lvl+'!');goChain();}}
-function feedFox(){if(vip){alert('👑 С Super VIP Фокси всегда сыт на 100%!');return;}if(full>=100){alert('🦊 Фокси уже полностью сыт!');return;}if(food<=0){alert('🍓 Еда закончилась! Открой сундук на тропе или купи набор в Магазине.');return;}food--;full=Math.min(100,full+35);updTop();save();alert('🍖 Ням-ням! Сытость: '+full+'%');}
-function buyFoodXP(){if(xp<60){alert('⚡ Нужно 60 XP!');return;}xp-=60;food+=5;updTop();save();alert('🍓 Куплено 5 вкусняшек!');}
-function spinWheel(){var today=new Date().toDateString();if(wheelDay===today){alert('🎡 Ты уже крутил Колесо Фортуны сегодня! Возвращайся завтра.');return;}wheelDay=today;var prizes=[{t:'+40 XP ⚡',fn:function(){xp+=40;}},{t:'+2 🍓 вкусняшки',fn:function(){food+=2;}},{t:'+1 ❤️ жизнь',fn:function(){hp=Math.min(5,hp+1);}},{t:'+70 XP Джекпот! ⚡',fn:function(){xp+=70;}}];var p=prizes[Math.floor(Math.random()*prizes.length)];p.fn();updTop();save();alert('🎡 Колесо Фортуны остановилось!\nТвой приз: '+p.t);}
-function shareRef(){var link='https://t.me('🦊 Зацени тренажёр английского как Duolingo с батлами 1 на 1 прямо в Telegram!');xp+=25;updTop();save();if(tg&&tg.openTelegramLink)tg.openTelegramLink(link);else window.open(link,'_blank');}
-function goChain(){show('s-path');updTop();var box=document.getElementById('chain-box');box.innerHTML='';if(typeof UNITS==='undefined')return;var cv=[0,-42,0,42];for(var u=0;u<UNITS.length;u++){(function(ui){var U=UNITS[ui];var lkU=U.vip&&!vip;var hd=document.createElement('div');hd.className='unit-head'+(U.vip?' vip-u':'');hd.innerHTML='<div><div style="font-size:11px;opacity:.9">'+U.lvl+(lkU?' • 🔒 VIP':'')+'</div><div style="font-size:16px">'+U.title+'</div></div><button type="button" class="guide-btn">📖 Правила</button>';hd.querySelector('button').onclick=function(){alert('📖 '+U.title+'\n\n'+U.guide);};box.appendChild(hd);var tr=document.createElement('div');tr.className='trail';for(var s=0;s<U.steps.length;s++){(function(si){var st=U.steps[si];var key=U.id+'_'+si;var curLv=prog[key]||0;var maxLv=st.stepsTotal||1;var isDone=curLv>=maxLv;var prevDone=(si===0)||((prog[U.id+'_'+(si-1)]||0)>=(U.steps[si-1].stepsTotal||1));var unl=!lkU&&prevDone;var nd=document.createElement('div');nd.className='node';nd.style.transform='translateX('+cv[si%4]+'px)';var bt=document.createElement('button');bt.type='button';if(st.type==='chest'){bt.className='cbtn '+(isDone?'done':(unl?'chest':'lock'));bt.innerHTML=isDone?'✅':'🎁';bt.onclick=function(){if(lkU){if(confirm('👑 Super VIP открывает всё (50 ⭐️). Купить?'))buy('vip');return;}if(!unl){alert('🔒 Сначала пройди прошлый кружок!');return;}if(isDone){alert('🎁 Уже открыт!');return;}prog[key]=1;xp+=st.xpBonus;food+=st.foodBonus;updTop();save();alert('🎁 +'+st.xpBonus+' XP и +'+st.foodBonus+' 🍓!');goChain();};}else{bt.className='cbtn '+(isDone?'done':(unl?'cur':'lock'));bt.innerHTML=(isDone?'⭐':(unl?getSkinIco():'🔒'))+'<span class="ring-tag">'+curLv+'/'+maxLv+'</span>';bt.onclick=function(){if(lkU){if(confirm('👑 Super VIP открывает всё (50 ⭐️). Купить?'))buy('vip');return;}if(!unl){alert('🔒 Сначала пройди прошлый этап!');return;}if(!vip&&hp<=0){alert('💔 Нет жизней! Восстанови в Магазине.');return;}if(!vip&&full<20){alert('🥺 Фокси голоден ('+full+'%)! Нажми «🍖 Покормить».');return;}cu=ui;cs=si;qi=0;combo=0;qList=st.qs.slice();for(var k=0;k<qList.length;k++)qList[k]._err=false;show('s-lesson');rQ();};}var tg=document.createElement('div');tg.className='ntag';tg.innerText=st.name;nd.appendChild(bt);nd.appendChild(tg);tr.appendChild(nd);})(s);}box.appendChild(tr);})(u);}}
-function rQ(){var q=qList[qi];document.getElementById('pfill').style.width=Math.max(10,Math.round(qi/qList.length*100))+'%';document.getElementById('qhead').innerHTML=(q._err?'<span style="color:#ff9600;font-size:12px;display:block">🔁 РАБОТА НАД ОШИБКАМИ</span>':'')+q.h;document.getElementById('qtxt').innerText=q.q;document.getElementById('sheet').classList.remove('show');var cb=document.getElementById('cchoices');var bb=document.getElementById('cbuild');if(q.t==='b'){cb.style.display='none';bb.style.display='block';document.getElementById('bchk').style.display='block';pt=[];rTiles(q);}else{bb.style.display='none';cb.style.display='block';cb.innerHTML='';for(var i=0;i<q.o.length;i++){(function(x){var bt=document.createElement('button');bt.type='button';bt.className='opt';bt.innerText=(x+1)+'. '+q.o[x];bt.onclick=function(){chkC(x,bt);};cb.appendChild(bt);})(i);}}}
-function fb(ok,sub,gain){var sh=document.getElementById('sheet');sh.className='sheet show '+(ok?'sok':'serr');document.getElementById('stitle').innerText=ok?('🦊 Верно! +'+gain+' XP'+(combo>=3?' 🔥x'+combo:'')):'❌ Ошибка (повторим в конце)';document.getElementById('ssub').innerText=sub||'';document.getElementById('sbtn').className='dbtn '+(ok?'bg':'br');}
-function chkC(x,el){var q=qList[qi];var all=document.querySelectorAll('#cchoices .opt');for(var i=0;i<all.length;i++)all[i].disabled=true;var mult=(vip||full>=80)?1.5:1;if(x===q.a){combo++;var g=Math.round((15+(combo>=3?5:0))*mult);el.classList.add('ok');xp+=g;spk();fb(true,'',g);}else{combo=0;el.classList.add('no');all[q.a].classList.add('ok');if(!vip)hp=Math.max(0,hp-1);qList.push(Object.assign({},q,{_err:true}));fb(false,'Верно: '+q.o[q.a],0);}updTop();save();}
-function rTiles(q){var sl=document.getElementById('bslots');var pl=document.getElementById('bpool');sl.innerHTML='';pl.innerHTML='';for(var i=0;i<pt.length;i++){(function(pi){var t=document.createElement('button');t.type='button';t.className='tile';t.innerText=q.w[pt[pi]];t.onclick=function(){pt.splice(pi,1);rTiles(q);};sl.appendChild(t);})(i);}for(var j=0;j<q.w.length;j++){(function(wi){var t=document.createElement('button');t.type='button';t.className='tile'+(pt.indexOf(wi)!==-1?' used':'');t.innerText=q.w[wi];t.onclick=function(){pt.push(wi);rTiles(q);};pl.appendChild(t);})(j);}}
-function chkBuild(){var q=qList[qi];var res=[];for(var i=0;i<pt.length;i++)res.push(q.w[pt[i]]);document.getElementById('bchk').style.display='none';var mult=(vip||full>=80)?1.5:1;if(res.join(' ')===q.ans.join(' ')){combo++;var g=Math.round((20+(combo>=3?5:0))*mult);xp+=g;spk();fb(true,'Идеально!',g);}else{combo=0;if(!vip)hp=Math.max(0,hp-1);qList.push(Object.assign({},q,{_err:true}));fb(false,'Верно: '+q.ans.join(' '),0);}updTop();save();}
-function nxt(){var st=UNITS[cu].steps[cs];qi++;if(qi<qList.length)rQ();else{var key=UNITS[cu].id+'_'+cs;prog[key]=Math.min(st.stepsTotal||1,(prog[key]||0)+1);if(!vip)full=Math.max(0,full-20);xp+=25;updTop();save();alert('🎉 Этап '+prog[key]+'/'+(st.stepsTotal||1)+' пройден! +25 XP');goChain();}}
+function getSkinIco(){
+  for(var i=0;i<SKINS.length;i++) if(SKINS[i].id===skin) return SKINS[i].ico;
+  return '🦊';
+}
+function save(){
+  var d=JSON.stringify({xp:xp,hp:hp,vip:vip,frz:frz,lvl:lvl,full:full,food:food,prog:prog,skin:skin,owned:owned,wheelDay:wheelDay,hist:hist});
+  try{localStorage.setItem('fx_v3',d);}catch(e){}
+  if(tg&&tg.CloudStorage) tg.CloudStorage.setItem('fx_v3',d);
+}
+function updTop(){
+  var ico=getSkinIco();
+  document.getElementById('hxp').innerText=xp;
+  document.getElementById('hhp').innerText=vip?'♾️':hp;
+  document.getElementById('hfull').innerText=vip?'100':full;
+  document.getElementById('hfood').innerText=vip?'♾️':food;
+  document.getElementById('l-fox').innerText=ico;
+  var fm=document.getElementById('fox-mood'),fs=document.getElementById('fox-stat');
+  if(vip||full>=80){fm.innerText=ico;fs.innerText='Фокси сыт (+50% XP бонус!)';}
+  else if(full>=30){fm.innerText=ico;fs.innerText='Фокси в норме (корми для +50% XP)';}
+  else{fm.innerText='🥺';fs.innerText='Фокси голоден! Покорми перед уроком';}
+}
+function load(raw){
+  if(!raw)return;
+  try{
+    var d=JSON.parse(raw);
+    xp=d.xp||0;hp=(d.hp!==undefined)?d.hp:5;vip=!!d.vip;frz=d.frz||0;
+    lvl=d.lvl||'';full=(d.full!==undefined)?d.full:100;food=(d.food!==undefined)?d.food:2;
+    prog=d.prog||{};skin=d.skin||'fox';owned=d.owned||['fox'];wheelDay=d.wheelDay||'';hist=d.hist||[];
+    updTop();
+    if(lvl){document.getElementById('hlvl').innerText=lvl;goChain();}
+  }catch(e){}
+}
+function show(id){
+  clearInterval(pTmr);
+  var s=document.querySelectorAll('.scr');
+  for(var i=0;i<s.length;i++) s[i].classList.remove('act');
+  document.getElementById(id).classList.add('act');
+  document.getElementById('sheet').classList.remove('show');
+  document.getElementById('nav').style.display=(id==='s-lesson'||id==='s-pvp')?'none':'flex';
+}
+function rTest(){
+  var q=tQs[ti];
+  document.getElementById('tstep').innerText=(ti+1)+'/4';
+  document.getElementById('tq').innerText=q.q;
+  var b=document.getElementById('topts');b.innerHTML='';
+  for(var i=0;i<q.o.length;i++){
+    (function(x){
+      var btn=document.createElement('button');
+      btn.type='button';btn.className='opt';btn.innerText=q.o[x];
+      btn.onclick=function(){pickT(x);};b.appendChild(btn);
+    })(i);
+  }
+}
+function pickT(x){
+  if(x===tQs[ti].a)ts+=tQs[ti].p;ti++;
+  if(ti<tQs.length)rTest();
+  else{
+    lvl=ts>=8?'B2':(ts>=5?'B1':(ts>=2?'A2':'A1'));
+    document.getElementById('hlvl').innerText=lvl;save();
+    alert('🦊 Фокси определил твой уровень: '+lvl+'!');goChain();
+  }
+}
+function feedFox(){
+  if(vip){alert('👑 С Super VIP Фокси всегда сыт на 100%!');return;}
+  if(full>=100){alert('🦊 Фокси уже полностью сыт!');return;}
+  if(food<=0){alert('🍓 Еда закончилась! Открой сундук или купи в Магазине.');return;}
+  food--;full=Math.min(100,full+35);updTop();save();
+  alert('🍖 Ням-ням! Сытость: '+full+'%');
+}
+function buyFoodXP(){
+  if(xp<60){alert('⚡ Нужно 60 XP!');return;}
+  xp-=60;food+=5;updTop();save();alert('🍓 Куплено 5 вкусняшек!');
+}
+function spinWheel(){
+  var today=new Date().toDateString();
+  if(wheelDay===today){alert('🎡 Ты уже крутил Колесо сегодня! Приходи завтра.');return;}
+  wheelDay=today;
+  var pr=[{t:'+40 XP ⚡',f:function(){xp+=40;}},{t:'+2 🍓 еды',f:function(){food+=2;}},{t:'+1 ❤️ жизнь',f:function(){hp=Math.min(5,hp+1);}}];
+  var p=pr[Math.floor(Math.random()*pr.length)];p.f();updTop();save();
+  alert('🎡 Твой приз дня: '+p.t);
+}
+function shareRef(){
+  var link='https://t.me('🦊 Зацени тренажёр английского!');
+  xp+=25;updTop();save();
+  if(tg&&tg.openTelegramLink)tg.openTelegramLink(link);else window.open(link,'_blank');
+}
+function goChain(){
+  show('s-path');updTop();
+  var box=document.getElementById('chain-box');box.innerHTML='';
+  if(typeof UNITS==='undefined')return;
+  var cv=[0,-42,0,42];
+  for(var u=0;u<UNITS.length;u++){(function(ui){
+    var U=UNITS[ui],lkU=U.vip&&!vip;
+    var hd=document.createElement('div');hd.className='unit-head'+(U.vip?' vip-u':'');
+    hd.innerHTML='<div><div style="font-size:11px">'+U.lvl+(lkU?' • 🔒 VIP':'')+'</div><div style="font-size:16px">'+U.title+'</div></div><button type="button" class="guide-btn">📖 Правила</button>';
+    hd.querySelector('button').onclick=function(){alert('📖 '+U.title+'\n\n'+U.guide);};
+    box.appendChild(hd);
+    var tr=document.createElement('div');tr.className='trail';
+    for(var s=0;s<U.steps.length;s++){(function(si){
+      var st=U.steps[si],key=U.id+'_'+si,curLv=prog[key]||0,maxLv=st.stepsTotal||1;
+      var isDone=curLv>=maxLv,prevDone=(si===0)||((prog[U.id+'_'+(si-1)]||0)>=(U.steps[si-1].stepsTotal||1));
+      var unl=!lkU&&prevDone;
+      var nd=document.createElement('div');nd.className='node';nd.style.transform='translateX('+cv[si%4]+'px)';
+      var bt=document.createElement('button');bt.type='button';
+      if(st.type==='chest'){
+        bt.className='cbtn '+(isDone?'done':(unl?'chest':'lock'));bt.innerHTML=isDone?'✅':'🎁';
+        bt.onclick=function(){
+          if(lkU){if(confirm('👑 Super VIP (50 ⭐️)?'))buy('vip');return;}
+          if(!unl){alert('🔒 Пройди прошлый кружок!');return;}
+          if(isDone){alert('🎁 Уже открыт!');return;}
+          prog[key]=1;xp+=st.xpBonus;food+=st.foodBonus;updTop();save();alert('🎁 +'+st.xpBonus+' XP и +'+st.foodBonus+' 🍓!');goChain();
+        };
+      }else{
+        bt.className='cbtn '+(isDone?'done':(unl?'cur':'lock'));
+        bt.innerHTML=(isDone?'⭐':(unl?getSkinIco():'🔒'))+'<span class="ring-tag">'+curLv+'/'+maxLv+'</span>';
+        bt.onclick=function(){
+          if(lkU){if(confirm('👑 Super VIP (50 ⭐️)?'))buy('vip');return;}
+          if(!unl){alert('🔒 Пройди прошлый этап!');return;}
+          if(!vip&&hp<=0){alert('💔 Нет жизней!');return;}
+          if(!vip&&full<20){alert('🥺 Фокси голоден! Нажми «🍖 Покормить».');return;}
+          cu=ui;cs=si;qi=0;combo=0;qList=st.qs.slice();
+          for(var k=0;k<qList.length;k++)qList[k]._err=false;
+          show('s-lesson');rQ();
+        };
+      }
+      var tg=document.createElement('div');tg.className='ntag';tg.innerText=st.name;
+      nd.appendChild(bt);nd.appendChild(tg);tr.appendChild(nd);
+    })(s);}
+    box.appendChild(tr);
+  })(u);}
+}
+function rQ(){
+  var q=qList[qi];
+  document.getElementById('pfill').style.width=Math.max(10,Math.round(qi/qList.length*100))+'%';
+  document.getElementById('qhead').innerHTML=(q._err?'<span style="color:#ff9600;font-size:12px;display:block">🔁 РАБОТА НАД ОШИБКАМИ</span>':'')+q.h;
+  document.getElementById('qtxt').innerText=q.q;
+  document.getElementById('sheet').classList.remove('show');
+  var cb=document.getElementById('cchoices'),bb=document.getElementById('cbuild');
+  if(q.t==='b'){
+    cb.style.display='none';bb.style.display='block';document.getElementById('bchk').style.display='block';pt=[];rTiles(q);
+  }else{
+    bb.style.display='none';cb.style.display='block';cb.innerHTML='';
+    for(var i=0;i<q.o.length;i++){(function(x){
+      var bt=document.createElement('button');bt.type='button';bt.className='opt';bt.innerText=(x+1)+'. '+q.o[x];
+      bt.onclick=function(){chkC(x,bt);};cb.appendChild(bt);
+    })(i);}
+  }
+}
+function fb(ok,sub,gain){
+  var sh=document.getElementById('sheet');sh.className='sheet show '+(ok?'sok':'serr');
+  document.getElementById('stitle').innerText=ok?('🦊 Верно! +'+gain+' XP'+(combo>=3?' 🔥x'+combo:'')):'❌ Ошибка (повторим в конце)';
+  document.getElementById('ssub').innerText=sub||'';document.getElementById('sbtn').className='dbtn '+(ok?'bg':'br');
+}
+function chkC(x,el){
+  var q=qList[qi],all=document.querySelectorAll('#cchoices .opt');
+  for(var i=0;i<all.length;i++)all[i].disabled=true;
+  var mult=(vip||full>=80)?1.5:1;
+  if(x===q.a){combo++;var g=Math.round((15+(combo>=3?5:0))*mult);el.classList.add('ok');xp+=g;spk();fb(true,'',g);}
+  else{combo=0;el.classList.add('no');all[q.a].classList.add('ok');if(!vip)hp=Math.max(0,hp-1);qList.push(Object.assign({},q,{_err:true}));fb(false,'Верно: '+q.o[q.a],0);}
+  updTop();save();
+}
+function rTiles(q){
+  var sl=document.getElementById('bslots'),pl=document.getElementById('bpool');sl.innerHTML='';pl.innerHTML='';
+  for(var i=0;i<pt.length;i++){(function(pi){var t=document.createElement('button');t.type='button';t.className='tile';t.innerText=q.w[pt[pi]];t.onclick=function(){pt.splice(pi,1);rTiles(q);};sl.appendChild(t);})(i);}
+  for(var j=0;j<q.w.length;j++){(function(wi){var t=document.createElement('button');t.type='button';t.className='tile'+(pt.indexOf(wi)!==-1?' used':'');t.innerText=q.w[wi];t.onclick=function(){pt.push(wi);rTiles(q);};pl.appendChild(t);})(j);}
+}
+function chkBuild(){
+  var q=qList[qi],res=[];for(var i=0;i<pt.length;i++)res.push(q.w[pt[i]]);
+  document.getElementById('bchk').style.display='none';var mult=(vip||full>=80)?1.5:1;
+  if(res.join(' ')===q.ans.join(' ')){combo++;var g=Math.round((20+(combo>=3?5:0))*mult);xp+=g;spk();fb(true,'Идеально!',g);}
+  else{combo=0;if(!vip)hp=Math.max(0,hp-1);qList.push(Object.assign({},q,{_err:true}));fb(false,'Верно: '+q.ans.join(' '),0);}
+  updTop();save();
+}
+function nxt(){
+  var st=UNITS[cu].steps[cs];qi++;
+  if(qi<qList.length)rQ();
+  else{var key=UNITS[cu].id+'_'+cs;prog[key]=Math.min(st.stepsTotal||1,(prog[key]||0)+1);if(!vip)full=Math.max(0,full-20);xp+=25;updTop();save();alert('🎉 Этап '+prog[key]+'/'+(st.stepsTotal||1)+' пройден! +25 XP');goChain();}
+}
 function spk(){if('speechSynthesis' in window){var u=new SpeechSynthesisUtterance(qList[qi].s);u.lang='en-US';speechSynthesis.speak(u);}}
-function renderRank(){var list=[{n:'🥇 Alex_Pro',x:2450},{n:'🥈 Maria_Eng',x:1980},{n:'🥉 Max_Dev',x:1640},{n:'4. Kate_US',x:1420},{n:'5. Dima_IT',x:1190},{n:'6. Anna_Sky',x:980},{n:'7. Leo_Fox',x:810},{n:'8. Mila_B2',x:650},{n:'9. Oleg_Pro',x:520}];for(var i=10;i<=200;i++)list.push({n:i+'. User_'+i,x:Math.max(10,500-i*2)});list.push({n:getSkinIco()+' Ты',x:xp,me:true});list.sort(function(a,b){return b.x-a.x;});var box=document.getElementById('rank-list');box.innerHTML='';var lim=show200?Math.min(200,list.length):10;for(var j=0;j<lim;j++){var r=list[j];box.innerHTML+='<div class="card" style="padding:10px 14px;margin-bottom:7px;display:flex;justify-content:space-between;'+(r.me?'border-color:#1cb0f6':'')+'"><span>'+(r.me?'<b>#'+(j+1)+' '+r.n+'</b>':r.n)+'</span><b style="color:#ffc800">'+r.x+' XP</b></div>';}var hb=document.getElementById('pvp-hist');if(hb){hb.innerHTML='<h3 style="font-size:15px;margin-bottom:8px">📜 История боёв ('+hist.length+')</h3>';if(!hist.length)hb.innerHTML+='<div style="color:#afafaf;font-size:12px">Пока нет боёв — нажми «⚔️ Батл» сверху!</div>';else for(var h=0;h<hist.length;h++)hb.innerHTML+='<div class="card" style="padding:9px 12px;margin-bottom:6px;font-size:13px;display:flex;justify-content:space-between"><span>'+hist[h].t+'</span><b>'+hist[h].r+'</b></div>';}}
+function renderRank(){
+  var list=[{n:'🥇 Alex_Pro',x:2450},{n:'🥈 Maria_Eng',x:1980},{n:'🥉 Max_Dev',x:1640},{n:'4. Kate_US',x:1420},{n:'5. Dima_IT',x:1190},{n:'6. Anna_Sky',x:980},{n:'7. Leo_Fox',x:810},{n:'8. Mila_B2',x:650},{n:'9. Oleg_Pro',x:520}];
+  for(var i=10;i<=200;i++)list.push({n:i+'. User_'+i,x:Math.max(10,500-i*2)});
+  list.push({n:getSkinIco()+' Ты',x:xp,me:true});list.sort(function(a,b){return b.x-a.x;});
+  var box=document.getElementById('rank-list');box.innerHTML='';var lim=show200?Math.min(200,list.length):10;
+  for(var j=0;j<lim;j++){var r=list[j];box.innerHTML+='<div class="card" style="padding:10px 14px;margin-bottom:7px;display:flex;justify-content:space-between;'+(r.me?'border-color:#1cb0f6':'')+'"><span>'+(r.me?'<b>#'+(j+1)+' '+r.n+'</b>':r.n)+'</span><b style="color:#ffc800">'+r.x+' XP</b></div>';}
+  var hb=document.getElementById('pvp-hist');
+  if(hb){hb.innerHTML='<h3 style="font-size:15px;margin-bottom:8px">📜 История боёв ('+hist.length+')</h3>';if(!hist.length)hb.innerHTML+='<div style="color:#afafaf;font-size:12px">Пока нет боёв — нажми «⚔️ Батл»!</div>';else for(var h=0;h<hist.length;h++)hb.innerHTML+='<div class="card" style="padding:9px 12px;margin-bottom:6px;font-size:13px;display:flex;justify-content:space-between"><span>'+hist[h].t+'</span><b>'+hist[h].r+'</b></div>';}
+}
 function toggleTop200(){show200=!show200;document.getElementById('top200-btn').innerText=show200?'🔼 СВЕРНУТЬ ДО ТОП-10':'📜 ПОКАЗАТЬ ВЕСЬ ТОП-200';renderRank();}
 function startPvP(){var rivals=['Alex_Pro','Maria_Eng','Dima_IT','Kate_US','Leo_Fox'];pRival=rivals[Math.floor(Math.random()*rivals.length)];pQs=PVP_POOL.slice().sort(function(){return 0.5-Math.random();}).slice(0,5);pIdx=0;pMe=0;pBot=0;show('s-pvp');nextPvP();}
-function nextPvP(){clearInterval(pTmr);if(pIdx>=pQs.length){var win=pMe>=pBot;var diff=win?30:-15;xp=Math.max(0,xp+diff);hist.unshift({t:(win?'🏆 Победа над ':'💀 Поражение от ')+pRival+' ('+pMe+':'+pBot+')',r:(win?'+30 XP':'-15 XP')});if(hist.length>15)hist.pop();updTop();save();alert((win?'🏆 ПОБЕДА! +30 XP':'💀 Поражение! -15 XP')+'\nСчёт: '+pMe+' : '+pBot);tab('rank',document.querySelectorAll('.nbtn')[1]);return;}pSec=10;document.getElementById('pvp-me').innerText=getSkinIco()+' Ты: '+pMe;document.getElementById('pvp-bot').innerText='🐺 '+pRival+': '+pBot;document.getElementById('pvp-tmr').innerText='⏱ '+pSec+'с';var q=pQs[pIdx];document.getElementById('pvp-q').innerText=(pIdx+1)+'/5: '+q.q;var ob=document.getElementById('pvp-opts');ob.innerHTML='';for(var i=0;i<q.o.length;i++){(function(x){var bt=document.createElement('button');bt.type='button';bt.className='opt';bt.innerText=q.o[x];bt.onclick=function(){if(x===q.a)pMe++;if(Math.random()>0.45)pBot++;pIdx++;nextPvP();};ob.appendChild(bt);})(i);}pTmr=setInterval(function(){pSec--;document.getElementById('pvp-tmr').innerText='⏱ '+pSec+'с';if(pSec<=0){if(Math.random()>0.4)pBot++;pIdx++;nextPvP();}},1000);}
-function renderShop(){var sb=document.getElementById('skins-box');sb.innerHTML='';for(var i=0;i<SKINS.length;i++){(function(sk){var has=vip||owned.indexOf(sk.id)!==-1;var act=skin===sk.id;sb.innerHTML+='<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px"><div><span style="font-size:24px">'+sk.ico+'</span> <b>'+sk.name+'</b></div><button type="button" class="sbtn" style="background:'+(act?'#58cc02;color:#fff':(has?'#1cb0f6;color:#fff':'#ffc800'))+'" onclick="pickSkin(\''+sk.id+'\','+sk.cost+')">'+(act?'НАДЕТО':(has?'НАДЕТЬ':sk.cost+' ⚡'))+'</button></div>';})(SKINS[i]);}}
+function nextPvP(){
+  clearInterval(pTmr);
+  if(pIdx>=pQs.length){var win=pMe>=pBot;xp=Math.max(0,xp+(win?30:-15));hist.unshift({t:(win?'🏆 Победа над ':'💀 Поражение от ')+pRival+' ('+pMe+':'+pBot+')',r:(win?'+30 XP':'-15 XP')});if(hist.length>15)hist.pop();updTop();save();alert((win?'🏆 ПОБЕДА! +30 XP':'💀 Поражение! -15 XP')+'\nСчёт: '+pMe+' : '+pBot);tab('rank',document.querySelectorAll('.nbtn'));return;}
+  pSec=10;document.getElementById('pvp-me').innerText=getSkinIco()+' Ты: '+pMe;document.getElementById('pvp-bot').innerText='🐺 '+pRival+': '+pBot;document.getElementById('pvp-tmr').innerText='⏱ '+pSec+'с';
+  var q=pQs[pIdx];document.getElementById('pvp-q').innerText=(pIdx+1)+'/5: '+q.q;var ob=document.getElementById('pvp-opts');ob.innerHTML='';
+  for(var i=0;i<q.o.length;i++){(function(x){var bt=document.createElement('button');bt.type='button';bt.className='opt';bt.innerText=q.o[x];bt.onclick=function(){if(x===q.a)pMe++;if(Math.random()>0.45)pBot++;pIdx++;nextPvP();};ob.appendChild(bt);})(i);}
+  pTmr=setInterval(function(){pSec--;document.getElementById('pvp-tmr').innerText='⏱ '+pSec+'с';if(pSec<=0){if(Math.random()>0.4)pBot++;pIdx++;nextPvP();}},1000);
+}
+function renderShop(){
+  var sb=document.getElementById('skins-box');sb.innerHTML='';
+  for(var i=0;i<SKINS.length;i++){(function(sk){var has=vip||owned.indexOf(sk.id)!==-1,act=skin===sk.id;sb.innerHTML+='<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px"><div><span style="font-size:24px">'+sk.ico+'</span> <b>'+sk.name+'</b></div><button type="button" class="sbtn" style="background:'+(act?'#58cc02;color:#fff':(has?'#1cb0f6;color:#fff':'#ffc800'))+'" onclick="pickSkin(\''+sk.id+'\','+sk.cost+')">'+(act?'НАДЕТО':(has?'НАДЕТЬ':sk.cost+' ⚡'))+'</button></div>';})(SKINS[i]);}
+}
 function pickSkin(id,cost){var has=vip||owned.indexOf(id)!==-1;if(!has){if(xp<cost){alert('⚡ Нужно '+cost+' XP!');return;}xp-=cost;owned.push(id);}skin=id;updTop();save();renderShop();}
 function tab(t,el){var bs=document.querySelectorAll('.nbtn');for(var i=0;i<bs.length;i++)bs[i].classList.remove('act');if(el)el.classList.add('act');if(t==='path')goChain();else{show('s-'+t);if(t==='rank')renderRank();if(t==='shop')renderShop();}}
 function buy(it){var u=(it==='vip')?('https://'+'t.me/$ElaWUcXSCEjkFgAANpAt_vj4fGQ'):('https://'+'t.me/$_nXN6cXSCEjlFgAApjf9EBrY0v4');if(tg&&tg.openInvoice){tg.openInvoice(u,function(st){if(st==='paid'){if(it==='vip'){vip=true;updTop();save();alert('👑 Super VIP активирован!');goChain();}else{frz+=1;hp=5;updTop();save();alert('❄️ Заморозка куплена ('+frz+' шт.)!');}}});}else if(tg&&tg.openTelegramLink)tg.openTelegramLink(u);else window.location.href=u;}
