@@ -395,32 +395,27 @@
         box.appendChild(d);
       });
     }
-        function payStars(cnt,url){
-      var LINKS={
-        25:'https://t.me',
-        50:'https://t.me',
-        100:'https://t.me',
-        250:'https://t.me'
+            function payStars(cnt,url){
+      var SLUGS={
+        25:'AXEIHMXSCEgNGAAA-QtHj9NLseU',
+        50:'B_kc-8XSCEgOGAAAfxsDO8eOo40',
+        100:'AHPhCMXSCEgPGAAAyxOkjmH_F8A',
+        250:'KHUp-cXSCEgQGAAAFMllqAfzVOg'
       };
-      var link=LINKS[cnt]||url;
+      var slug=SLUGS[cnt];
+      var fullUrl='https://t.me;
       if(tg&&tg.openInvoice){
-        tg.openInvoice(link,function(status){
+        tg.openInvoice(fullUrl,function(status){
           if(status==='paid'){
             st.stars+=cnt;save();renderAll();
             alert('🎉 Оплата прошла! Начислено +'+cnt+' ⭐!');
           }
         });
       }else{
-        window.open(link,'_blank');
-      }
-        }
-      var link=LINKS[cnt]||url;
-      if(tg&&tg.openTelegramLink){
-        tg.openTelegramLink(link);
-      }else{
-        window.open(link,'_blank');
+        window.location.href='tg://invoice?slug='+slug;
       }
     }
+
 
     function buyVip(){
       if(st.vip){alert('👑 VIP уже активен!');return;}
