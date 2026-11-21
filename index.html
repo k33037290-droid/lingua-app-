@@ -646,9 +646,41 @@ function updWalletMini(){
   if(document.getElementById('mini-xp'))document.getElementById('mini-xp').innerText=xp;
   if(document.getElementById('hcups'))document.getElementById('hcups').innerText=leagueXp;
 }
+function applyExtra(raw){
+  try{
+    var d=JSON.parse(raw||'null');
+    if(!d)return;
+    if(typeof d.xp==='number')xp=d.xp;
+    if(d.done&&typeof done!=='undefined')done=d.done;
+    if(typeof d.vip==='boolean')vip=d.vip;
+    if(d.lvl&&typeof lvl!=='undefined')lvl=d.lvl;
+    if(typeof d.lxp==='number')leagueXp=d.lxp;
+    updTop();updWalletMini();
+    if(typeof renderPath==='function')renderPath();
+    if((typeof done!=='undefined'&&done.length>0)||xp>0||stars>0||vip)show('s-path');
+  }catch(e){}
+}
+function saveFull(){
+  try{
+    var str=JSON.stringify({
+      xp:xp,
+      done:(typeof done!=='undefined'?done:[]),
+      vip:vip,
+      lvl:(typeof lvl!=='undefined'?lvl:'A1'),
+      lxp:leagueXp
+    });
+    localStorage.setItem('fx_extra',str);
+    if(tg&&tg.CloudStorage)tg.CloudStorage.setItem('fx_extra',str);
+  }catch(e){}
+}
+var _origSave=save;
+save=function(){_origSave();saveFull();};
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
-if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val){load(val);if(xp>0||stars>0||vip)show('s-path');}});
-if(xp>0||stars>0||vip)show('s-path');
+applyExtra(localStorage.getItem('fx_extra'));
+if(tg&&tg.CloudStorage){
+  tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
+  tg.CloudStorage.getItem('fx_extra',function(err,val){if(!err&&val)applyExtra(val);});
+}
 updWalletMini();showTop(10);
 </script>
 </body>
