@@ -74,7 +74,7 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
 </div>
 
 <div class="main">
-  <div id="s-test" class="scr act">
+  <div id="s-test" class="scr">
     <div style="color:#1cb0f6;font-size:12px;font-weight:800;margin-bottom:6px">🎯 ТЕСТ НА УРОВЕНЬ (<span id="tstep">1/4</span>)</div>
     <h2 style="font-size:19px;margin-bottom:14px">Ответь на 4 вопроса, чтобы Фокси определил твой уровень:</h2>
     <div class="mrow"><div style="font-size:52px">🦊</div><div class="bubble"><div id="tq">1. Переведи: 'They are my friends'</div></div></div>
@@ -84,7 +84,7 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
       <button type="button" class="opt" onclick="pickT(2)">3. Мы на работе</button>
     </div>
   </div>
-  <div id="s-path" class="scr">
+  <div id="s-path" class="scr act">
     <div class="fox-bar">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="font-size:38px" id="fox-mood">🦊</div>
@@ -688,14 +688,23 @@ function saveFull(){
 }
 var _origSave=save;
 save=function(){_origSave();saveFull();};
+window.addEventListener('beforeunload',saveFull);
+if(tg&&tg.onEvent)tg.onEvent('viewportChanged',saveFull);
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
 applyExtra(localStorage.getItem('fx_extra'));
-setTimeout(function(){applyExtra(localStorage.getItem('fx_extra'));},400);
+if(!localStorage.getItem('fx_extra')&&xp===0&&stars===0&&Object.keys(prog||{}).length===0){
+  show('s-test');
+}else{
+  show('s-path');
+  if(typeof goChain==='function')goChain();
+}
 if(tg&&tg.CloudStorage){
   tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
   tg.CloudStorage.getItem('fx_extra',function(err,val){if(!err&&val)applyExtra(val);});
   tg.CloudStorage.getItem('fx_gems',function(err,val){if(!err&&val&&parseInt(val,10)>xp){xp=parseInt(val,10);updTop();updWalletMini();}});
 }
+var _origTab=tab;
+tab=function(t,el){_origTab(t,el);if(t==='league')showTop(10);};
 updWalletMini();showTop(10);
 </script>
 </body>
