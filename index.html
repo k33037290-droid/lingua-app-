@@ -1,118 +1,228 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FoxyLingua — Учи английский играя</title>
-    <script src="https://telegram.org"></script>
-    <style>
-        :root {
-            --bg: #131f24;
-            --surface: #202f36;
-            --border: #37464f;
-            --green: #58cc02;
-            --green-dark: #46a302;
-            --blue: #1cb0f6;
-            --blue-dark: #1899d6;
-            --gold: #ffc800;
-            --gold-dark: #e5a500;
-            --orange: #ff9600;
-            --red: #ff4b4b;
-            --red-dark: #d33131;
-            --text: #ffffff;
-            --muted: #afafaf;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 2px solid var(--border); background: var(--bg); z-index: 20; font-weight: 800; font-size: 15px; }
-        .top-item { display: flex; align-items: center; gap: 6px; }
-        .lvl-pill { background: var(--blue); color: #fff; padding: 4px 10px; border-radius: 10px; font-size: 13px; box-shadow: 0 2px 0 var(--blue-dark); }
-
-        .main { flex: 1; overflow-y: auto; padding: 16px 16px 95px; }
-        .screen { display: none; }
-        .screen.active { display: block; }
-
-        .section-card { background: var(--surface); border: 2px solid var(--border); border-bottom-width: 5px; border-radius: 20px; padding: 18px; margin-bottom: 14px; transition: transform 0.08s; }
-        .section-card:active { transform: translateY(3px); border-bottom-width: 2px; }
-        .section-card.vip-card { border-color: #634d14; }
-        .section-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .pill { display: inline-block; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 9px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .pill-free { background: rgba(88, 204, 2, 0.18); color: var(--green); }
-        .pill-vip { background: rgba(255, 200, 0, 0.18); color: var(--gold); }
-        .sec-title { font-size: 18px; font-weight: 800; margin-bottom: 5px; }
-        .sec-desc { font-size: 13px; color: var(--muted); line-height: 1.4; }
-
-        .unit-banner { background: var(--green); color: #fff; padding: 16px 18px; border-radius: 18px; box-shadow: 0 5px 0 var(--green-dark); margin-bottom: 26px; display: flex; justify-content: space-between; align-items: center; }
-        .unit-banner.gold-banner { background: var(--gold); color: #131f24; box-shadow: 0 5px 0 var(--gold-dark); }
-        .trail { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 6px 0 30px; }
-        .step-node { display: flex; flex-direction: column; align-items: center; }
-        .circle-btn { width: 78px; height: 72px; border-radius: 50%; border: none; font-size: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.08s; }
-        .circle-btn:active { transform: translateY(4px); }
-        .circle-btn.is-done { background: var(--gold); color: #131f24; box-shadow: 0 6px 0 var(--gold-dark); }
-        .circle-btn.is-active { background: var(--green); color: #fff; box-shadow: 0 6px 0 var(--green-dark); }
-        .circle-btn.is-locked { background: #263740; color: #566973; box-shadow: 0 6px 0 #1b282f; }
-        .step-tag { margin-top: 8px; background: var(--surface); border: 2px solid var(--border); padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 800; color: #e5e5e5; }
-
-        .lesson-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-        .close-x { background: none; border: none; color: var(--muted); font-size: 22px; font-weight: 800; }
-        .bar-track { flex: 1; height: 16px; background: #263740; border-radius: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; width: 10%; background: var(--green); border-radius: 10px; transition: width 0.3s ease; }
-
-        .task-heading { font-size: 20px; font-weight: 800; margin-bottom: 16px; }
-        .mascot-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
-        .foxy-avatar { font-size: 56px; flex-shrink: 0; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.45)); }
-        .speech-bubble { background: var(--surface); border: 2px solid var(--border); border-radius: 18px; padding: 14px 16px; flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 17px; font-weight: 700; line-height: 1.35; }
-        .speaker-btn { background: var(--blue); border: none; border-radius: 12px; width: 42px; height: 42px; font-size: 19px; color: #fff; box-shadow: 0 3px 0 var(--blue-dark); flex-shrink: 0; }
-        .speaker-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--blue-dark); }
-
-        .choice-btn { width: 100%; background: var(--surface); color: var(--text); border: 2px solid var(--border); border-bottom-width: 5px; border-radius: 16px; padding: 14px 16px; font-size: 16px; font-weight: 700; text-align: left; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
-        .choice-btn:active { transform: translateY(3px); border-bottom-width: 2px; }
-        .choice-num { width: 28px; height: 28px; border: 2px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--muted); flex-shrink: 0; }
-        .choice-btn.right { background: rgba(88, 204, 2, 0.16); border-color: var(--green); color: var(--green); }
-        .choice-btn.wrong { background: rgba(255, 75, 75, 0.16); border-color: var(--red); color: var(--red); }
-
-        .slots-line { min-height: 56px; border-bottom: 2px solid var(--border); padding: 6px 2px; margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
-        .tiles-pool { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-        .tile { background: var(--surface); color: #fff; border: 2px solid var(--border); border-bottom-width: 4px; border-radius: 14px; padding: 10px 14px; font-size: 16px; font-weight: 700; }
-        .tile.hidden-tile { background: #1a272d; color: transparent; border-color: #263740; pointer-events: none; }
-
-        .bottom-sheet { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px 18px 24px; z-index: 100; display: none; flex-direction: column; gap: 12px; border-top: 2px solid var(--border); }
-        .bottom-sheet.show { display: flex; }
-        .bottom-sheet.ok-sheet { background: #183114; border-color: #2b5423; color: var(--green); }
-        .bottom-sheet.err-sheet { background: #361616; border-color: #5c2323; color: var(--red); }
-        .sheet-head { font-size: 20px; font-weight: 800; }
-        .sheet-sub { font-size: 14px; font-weight: 700; }
-
-        .duo-btn { width: 100%; padding: 15px; border: none; border-radius: 16px; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
-        .duo-green { background: var(--green); color: #fff; box-shadow: 0 4px 0 var(--green-dark); }
-        .duo-red { background: var(--red); color: #fff; box-shadow: 0 4px 0 var(--red-dark); }
-
-        .row-card { background: var(--surface); border: 2px solid var(--border); border-bottom-width: 4px; border-radius: 18px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-        .star-price { background: var(--gold); color: #131f24; border: none; border-radius: 12px; padding: 10px 14px; font-weight: 800; font-size: 15px; box-shadow: 0 4px 0 var(--gold-dark); white-space: nowrap; }
-
-        .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 68px; background: var(--bg); border-top: 2px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 40; }
-        .tab-btn { background: none; border: 2px solid transparent; border-radius: 14px; padding: 6px 14px; color: var(--muted); font-size: 11px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-        .tab-btn.active { color: var(--blue); background: rgba(28, 176, 246, 0.12); border-color: rgba(28, 176, 246, 0.35); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>FoxyLingua</title>
+<script src="https://telegram.org"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:2px solid #37464f;font-weight:800;font-size:15px}
+.lvl{background:#1cb0f6;color:#fff;padding:4px 10px;border-radius:10px;font-size:13px}
+.main{flex:1;overflow-y:auto;padding:16px 16px 90px}
+.scr{display:none}.scr.act{display:block}
+.card{background:#202f36;border:2px solid #37464f;border-bottom-width:5px;border-radius:18px;padding:16px;margin-bottom:12px}
+.card.vip{border-color:#634d14}
+.pill{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:8px;margin-bottom:6px}
+.p-free{background:#1e3b17;color:#58cc02}.p-vip{background:#3d2e0a;color:#ffc800}
+.banner{background:#58cc02;color:#fff;padding:16px;border-radius:16px;box-shadow:0 5px 0 #46a302;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;font-weight:800}
+.banner.gold{background:#ffc800;color:#131f24;box-shadow:0 5px 0 #d9a600}
+.trail{display:flex;flex-direction:column;align-items:center;gap:20px;padding-bottom:30px}
+.node{display:flex;flex-direction:column;align-items:center}
+.cbtn{width:74px;height:68px;border-radius:50%;border:none;font-size:28px;display:flex;align-items:center;justify-content:center}
+.cbtn.done{background:#ffc800;color:#131f24;box-shadow:0 5px 0 #c99c00}
+.cbtn.cur{background:#58cc02;color:#fff;box-shadow:0 5px 0 #46a302}
+.cbtn.lock{background:#263740;color:#566973;box-shadow:0 5px 0 #1b282f}
+.ntag{margin-top:7px;background:#202f36;border:2px solid #37464f;padding:4px 12px;border-radius:12px;font-size:13px;font-weight:800}
+.lbar{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.track{flex:1;height:14px;background:#263740;border-radius:10px;overflow:hidden}
+.fill{height:100%;width:10%;background:#58cc02;transition:width .3s}
+.mrow{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.bubble{background:#202f36;border:2px solid #37464f;border-radius:18px;padding:14px;flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:17px;font-weight:700}
+.spk{background:#1cb0f6;border:none;border-radius:12px;width:42px;height:42px;font-size:19px;color:#fff;flex-shrink:0}
+.opt{width:100%;background:#202f36;color:#fff;border:2px solid #37464f;border-bottom-width:5px;border-radius:15px;padding:14px 16px;font-size:16px;font-weight:700;text-align:left;margin-bottom:10px;display:block}
+.opt.ok{background:#1e3b17;border-color:#58cc02;color:#58cc02}
+.opt.no{background:#3b1717;border-color:#ff4b4b;color:#ff4b4b}
+.slots{min-height:52px;border-bottom:2px solid #37464f;padding:6px 0;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.tile{background:#202f36;color:#fff;border:2px solid #37464f;border-bottom-width:4px;border-radius:12px;padding:10px 14px;font-size:16px;font-weight:700}
+.tile.used{opacity:.2;pointer-events:none}
+.sheet{position:fixed;bottom:0;left:0;right:0;padding:18px 16px 24px;z-index:100;display:none;flex-direction:column;gap:10px;border-top:2px solid #37464f}
+.sheet.show{display:flex}.sheet.sok{background:#183114;color:#58cc02}.sheet.serr{background:#361616;color:#ff4b4b}
+.dbtn{width:100%;padding:15px;border:none;border-radius:15px;font-size:16px;font-weight:800;text-transform:uppercase}
+.bg{background:#58cc02;color:#fff;box-shadow:0 4px 0 #46a302}.br{background:#ff4b4b;color:#fff;box-shadow:0 4px 0 #d33131}
+.sbtn{background:#ffc800;color:#131f24;border:none;border-radius:12px;padding:10px 14px;font-weight:800;white-space:nowrap}
+.nav{position:fixed;bottom:0;left:0;right:0;height:66px;background:#131f24;border-top:2px solid #37464f;display:flex;justify-content:space-around;align-items:center;z-index:40}
+.nbtn{background:none;border:none;color:#afafaf;font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nbtn.act{color:#1cb0f6}
+</style>
 </head>
 <body>
-
-    <div class="top-bar">
-        <div class="top-item"><span class="lvl-pill" id="hdr-lvl">A1</span></div>
-        <div class="top-item" style="color:var(--orange)">🔥 <span>1</span></div>
-        <div class="top-item" style="color:var(--gold)">⚡ <span id="hdr-xp">0</span></div>
-        <div class="top-item" style="color:var(--red)">❤️ <span id="hdr-hp">5</span></div>
+<div class="top">
+  <div><span class="lvl" id="hlvl">A1</span></div>
+  <div style="color:#ff9600">🔥 1</div>
+  <div style="color:#ffc800">⚡ <span id="hxp">0</span></div>
+  <div style="color:#ff4b4b">❤️ <span id="hhp">5</span></div>
+</div>
+<div class="main">
+  <div id="s-test" class="scr act">
+    <div style="color:#1cb0f6;font-size:12px;font-weight:800;margin-bottom:6px">🎯 ТЕСТ НА УРОВЕНЬ (<span id="tstep">1/4</span>)</div>
+    <h2 style="font-size:19px;margin-bottom:14px">Ответь на 4 вопроса, чтобы Фокси определил твой уровень:</h2>
+    <div class="mrow"><div style="font-size:52px">🦊</div><div class="bubble"><div id="tq">1. Переведи: 'They are my friends'</div></div></div>
+    <div id="topts">
+      <button type="button" class="opt" onclick="pickT(0)">1. Они мои друзья</button>
+      <button type="button" class="opt" onclick="pickT(1)">2. Он мой брат</button>
+      <button type="button" class="opt" onclick="pickT(2)">3. Мы на работе</button>
     </div>
+  </div>
+  <div id="s-courses" class="scr">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h2 style="font-size:20px">Разделы обучения</h2>
+      <button type="button" onclick="reTest()" style="background:#202f36;border:2px solid #37464f;color:#1cb0f6;padding:6px 10px;border-radius:10px;font-size:12px;font-weight:800">Тест уровня</button>
+    </div>
+    <div id="cbox"></div>
+  </div>
+  <div id="s-path" class="scr">
+    <button type="button" onclick="goCourses()" style="background:none;border:none;color:#1cb0f6;font-weight:800;font-size:15px;margin-bottom:12px">⬅️ Все разделы</button>
+    <div class="banner" id="ubanner"><div><div style="font-size:12px;opacity:.9" id="usub">УРОВЕНЬ</div><div style="font-size:18px" id="uname">Курс</div></div><div style="font-size:32px">🦊</div></div>
+    <div class="trail" id="tbox"></div>
+  </div>
+  <div id="s-lesson" class="scr">
+    <div class="lbar"><button type="button" onclick="goPath()" style="background:none;border:none;color:#afafaf;font-size:22px;font-weight:800">✕</button><div class="track"><div class="fill" id="pfill"></div></div></div>
+    <h2 style="font-size:19px;margin-bottom:14px" id="qhead">Переведи</h2>
+    <div class="mrow"><div style="font-size:52px">🦊</div><div class="bubble"><div id="qtxt">Apple</div><button type="button" class="spk" onclick="spk()">🔊</button></div></div>
+    <div id="cchoices"></div>
+    <div id="cbuild" style="display:none"><div class="slots" id="bslots"></div><div class="pool" id="bpool"></div><button type="button" class="dbtn bg" id="bchk" onclick="chkBuild()">ПРОВЕРИТЬ</button></div>
+  </div>
+  <div id="s-rank" class="scr">
+    <h2 style="font-size:20px;margin-bottom:14px">🏆 Рубиновая лига</h2>
+    <div class="card" style="display:flex;justify-content:space-between"><span>🥇 Alex_Pro (B2)</span><b style="color:#ffc800">1840 XP</b></div>
+    <div class="card" style="display:flex;justify-content:space-between"><span>🥈 Maria_Eng (B1)</span><b style="color:#ffc800">1290 XP</b></div>
+    <div class="card" style="border-color:#1cb0f6;display:flex;justify-content:space-between"><span>🦊 Ты</span><b style="color:#1cb0f6" id="rxp">0 XP</b></div>
+  </div>
+  <div id="s-shop" class="scr">
+    <h2 style="font-size:20px;margin-bottom:14px">🛒 Магазин Super Foxy</h2>
+    <div class="card" style="border-color:#ffc800;display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div><b>👑 Super VIP (Все разделы)</b><br><small style="color:#afafaf">Уровни A2, B1, B2, C1, Сленг + безлимит жизней ❤️ на 30 дней</small></div>
+      <button type="button" class="sbtn" onclick="buy('vip')">50 ⭐️</button>
+    </div>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div><b>❄️ Заморозка стрика</b><br><small style="color:#afafaf">Защита серии 🔥 при пропуске дня</small></div>
+      <button type="button" class="sbtn" onclick="buy('freeze')">15 ⭐️</button>
+    </div>
+  </div>
+</div>
+<div class="sheet" id="sheet"><div style="font-size:19px;font-weight:800" id="stitle">✅ Верно!</div><div style="font-size:14px;font-weight:700" id="ssub"></div><button type="button" class="dbtn bg" id="sbtn" onclick="nxt()">ПРОДОЛЖИТЬ</button></div>
+<div class="nav" id="nav">
+  <button type="button" class="nbtn act" onclick="tab('courses',this)"><span style="font-size:20px">🏠</span>Учиться</button>
+  <button type="button" class="nbtn" onclick="tab('rank',this)"><span style="font-size:20px">🏆</span>Лига</button>
+  <button type="button" class="nbtn" onclick="tab('shop',this)"><span style="font-size:20px">🛒</span>Магазин</button>
+</div><script>
+var tg=window.Telegram?window.Telegram.WebApp:null;if(tg)tg.expand();
+var tQs=[
+{q:"1. Переведи: 'They are my friends'",o:["1. Они мои друзья","2. Он мой брат","3. Мы на работе"],a:0,p:1},
+{q:"2. Вставь: 'She ___ to school every day'",o:["1. go","2. goes","3. going"],a:1,p:2},
+{q:"3. Как сказать 'Я живу здесь с 2020'?",o:["1. I live here since 2020","2. I have lived here since 2020","3. I am living in 2020"],a:1,p:3},
+{q:"4. Вставь: 'If I ___ you, I would accept it'",o:["1. am","2. was","3. were"],a:2,p:4}
+];
+var DB=[
+{id:"a1",lvl:"A1",vip:false,t:"Раздел 1: Уровень A1 (Новичок)",d:"Бесплатно: 3 урока (15 заданий). База, семья, кафе.",ls:[
+{n:"Урок 1: Первые шаги",qs:[
+{t:"c",h:"Переведи слово",q:"Apple",s:"Apple",o:["Яблоко","Груша","Банан","Апельсин"],a:0},
+{t:"c",h:"Переведи фразу",q:"Good morning",s:"Good morning",o:["Спокойной ночи","Доброе утро","Добрый вечер","Пока"],a:1},
+{t:"b",h:"Собери: «Я студент»",q:"I am a student",s:"I am a student",w:["student","I","a","am","is"],ans:["I","am","a","student"]},
+{t:"c",h:"Что означает?",q:"Water",s:"Water",o:["Молоко","Сок","Вода","Чай"],a:2},
+{t:"c",h:"Переведи",q:"Thank you very much",s:"Thank you very much",o:["Пожалуйста","Спасибо большое","Извините","Пока"],a:1}
+]},
+{n:"Урок 2: Семья и дом",qs:[
+{t:"c",h:"Переведи",q:"Brother",s:"Brother",o:["Отец","Дядя","Брат","Сын"],a:2},
+{t:"b",h:"Собери: «Она моя сестра»",q:"She is my sister",s:"She is my sister",w:["my","She","sister","is","are"],ans:["She","is","my","sister"]},
+{t:"c",h:"Заполни пропуск",q:"We ___ happy",s:"We are happy",o:["am","is","are","be"],a:2},
+{t:"c",h:"Переведи",q:"My father works here",s:"My father works here",o:["Отец живет тут","Мой отец работает здесь","Брат идет сюда","Отец дома"],a:1},
+{t:"b",h:"Собери: «У меня есть собака»",q:"I have a dog",s:"I have a dog",w:["dog","have","I","a","has"],ans:["I","have","a","dog"]}
+]},
+{n:"Урок 3: Кафе и покупки",qs:[
+{t:"c",h:"Переведи",q:"I need a cup of coffee",s:"I need a cup of coffee",o:["Хочу чай","Мне нужна чашка кофе","Кофе холодный","Купил кофе"],a:1},
+{t:"c",h:"Как спросить цену?",q:"How much is it?",s:"How much is it?",o:["Где это?","Сколько это стоит?","Кто это?","Что это?"],a:1},
+{t:"b",h:"Собери: «Счет, пожалуйста»",q:"The bill please",s:"The bill please",w:["please","The","menu","bill"],ans:["The","bill","please"]},
+{t:"c",h:"Что означает?",q:"Delicious",s:"Delicious",o:["Острый","Сладкий","Очень вкусный","Горький"],a:2},
+{t:"c",h:"Переведи",q:"I do not eat meat",s:"I do not eat meat",o:["Люблю мясо","Я не ем мясо","Готовлю мясо","Где мясо?"],a:1}
+]}
+]},
+{id:"a2",lvl:"A2",vip:true,t:"Раздел 2: Уровень A2 (Базовый)",d:"Super VIP: 2 урока (10 заданий). Путешествия, отели, погода.",ls:[
+{n:"Урок 1: Вчера и завтра",qs:[
+{t:"c",h:"Выбери форму",q:"Yesterday I ___ to the cinema",s:"Yesterday I went to the cinema",o:["go","went","gone","going"],a:1},
+{t:"b",h:"Собери: «Она работает из дома»",q:"She works from home",s:"She works from home",w:["from","She","home","works","at"],ans:["She","works","from","home"]},
+{t:"c",h:"Переведи",q:"I will call you tomorrow",s:"I will call you tomorrow",o:["Звонил вчера","Я позвоню тебе завтра","Позвони сегодня","Я занят"],a:1},
+{t:"c",h:"Сравнение",q:"This phone is ___ than mine",s:"This phone is better than mine",o:["good","better","best","more good"],a:1},
+{t:"c",h:"Что означает?",q:"Experience",s:"Experience",o:["Эксперимент","Опыт","Ожидание","Расходы"],a:1}
+]},
+{n:"Урок 2: Аэропорт и отель",qs:[
+{t:"c",h:"Что означает?",q:"Boarding pass",s:"Boarding pass",o:["Паспорт","Посадочный талон","Багаж","Таможня"],a:1},
+{t:"b",h:"Собери: «Где вокзал?»",q:"Where is the train station",s:"Where is the train station",w:["train","Where","station","is","the"],ans:["Where","is","the","train","station"]},
+{t:"c",h:"Переведи",q:"Flight delayed",s:"Flight delayed",o:["Рейс отменен","Рейс задерживается","Посадка окончена","Прямой рейс"],a:1},
+{t:"c",h:"Переведи",q:"I booked a room for two nights",s:"I booked a room for two nights",o:["Снял квартиру","Я забронировал номер на две ночи","Ищу отель","Номер занят"],a:1},
+{t:"c",h:"Переведи",q:"I am lost",s:"I am lost",o:["Я опоздал","Я потерялся","Я устал","Я готов"],a:1}
+]}
+]},
+{id:"b1",lvl:"B1",vip:true,t:"Раздел 3: Уровень B1 (Средний)",d:"Super VIP: 2 урока (10 заданий). Фразовые глаголы, Present Perfect, карьера.",ls:[
+{n:"Урок 1: Фразовые глаголы",qs:[
+{t:"c",h:"Что означает?",q:"Never give up",s:"Never give up",o:["Не дари","Никогда не сдавайся","Не спи","Продолжай"],a:1},
+{t:"b",h:"Собери: «Зависит от погоды»",q:"It depends on the weather",s:"It depends on the weather",w:["weather","depends","It","the","on"],ans:["It","depends","on","the","weather"]},
+{t:"c",h:"Переведи",q:"Look forward to",s:"I look forward to seeing you",o:["Смотреть вперед","С нетерпением ждать","Оглядываться","Искать выход"],a:1},
+{t:"c",h:"Переведи",q:"To figure out",s:"I will figure it out",o:["Забыть","Разобраться / понять","Посчитать","Отказаться"],a:1},
+{t:"c",h:"Что значит?",q:"We ran out of coffee",s:"We ran out of coffee",o:["Убежать за кофе","У нас закончился кофе","Разлить кофе","Купить кофе"],a:1}
+]},
+{n:"Урок 2: Работа и карьера",qs:[
+{t:"c",h:"Переведи",q:"Deadline",s:"We met the deadline",o:["Крайний срок сдачи","Начало проекта","Отпуск","Зарплата"],a:0},
+{t:"c",h:"Переведи",q:"He got promoted last month",s:"He got promoted last month",o:["Уволили","Его повысили в прошлом месяце","Ушел в отпуск","Нашел работу"],a:1},
+{t:"c",h:"Что означает?",q:"Reliable partner",s:"Reliable partner",o:["Странный","Надежный партнер","Богатый","Новый"],a:1},
+{t:"b",h:"Собери: «С моей точки зрения»",q:"In my point of view",s:"In my point of view",w:["of","my","In","view","point"],ans:["In","my","point","of","view"]},
+{t:"c",h:"Переведи",q:"Remote work",s:"Remote work",o:["Работа в офисе","Удаленная работа","Ночная смена","Стажировка"],a:1}
+]}
+]},
+{id:"b2c1",lvl:"B2–C1",vip:true,t:"Раздел 4: Уровень B2–C1 (Продвинутый)",d:"Super VIP: 2 урока (10 заданий). Идиомы, переговоры, сложная грамматика.",ls:[
+{n:"Урок 1: Идиомы носителей",qs:[
+{t:"c",h:"Что означает?",q:"Piece of cake",s:"It is a piece of cake",o:["Кусок торта","Пара пустяков / очень легко","Сложная задача","Обед"],a:1},
+{t:"c",h:"Переведи",q:"Let's call it a day",s:"Let's call it a day",o:["Удачный день","На сегодня хватит / закругляемся","Позвоним днем","Заново"],a:1},
+{t:"c",h:"Что значит?",q:"Under the weather",s:"I feel under the weather",o:["Под дождем","Приболеть / плохо себя чувствовать","В восторге","Прогноз"],a:1},
+{t:"b",h:"Собери: «На одной волне»",q:"We are on the same page",s:"We are on the same page",w:["same","We","page","on","are","the"],ans:["We","are","on","the","same","page"]},
+{t:"c",h:"Переведи",q:"To spill the beans",s:"Who spilled the beans?",o:["Просыпать фасоль","Проболтаться / выдать секрет","Ужин","Беспорядок"],a:1}
+]},
+{n:"Урок 2: Бизнес и грамматика",qs:[
+{t:"c",h:"Что значит?",q:"To cut corners",s:"We cannot cut corners",o:["Срезать путь","Экономить на качестве / халтурить","Закрыть сделку","Уволить"],a:1},
+{t:"c",h:"Переведи",q:"Win-win situation",s:"It is a win-win situation",o:["Взаимовыгодная ситуация","Сложный выбор","Любой ценой","Риск"],a:0},
+{t:"c",h:"Выбери форму",q:"Had I known, I ___ differently",s:"Had I known, I would have acted differently",o:["will act","would act","would have acted","acted"],a:2},
+{t:"b",h:"Собери с инверсией",q:"Never have I seen this",s:"Never have I seen this",w:["I","seen","Never","this","have"],ans:["Never","have","I","seen","this"]},
+{t:"c",h:"Переведи",q:"Ambiguous",s:"Ambiguous",o:["Амбициозный","Двусмысленный / неоднозначный","Очевидный","Огромный"],a:1}
+]}
+]},
+{id:"slang",lvl:"SLANG",vip:true,t:"Раздел 5: Живой сленг (TikTok и США)",d:"Super VIP: 2 урока (10 заданий). Современный сленг из сериалов и чатов.",ls:[
+{n:"Урок 1: Топ сленг TikTok",qs:[
+{t:"c",h:"Что значит?",q:"No cap",s:"That was amazing, no cap",o:["Без кепки","Без вранья / реально","Нет денег","Не понимаю"],a:1},
+{t:"c",h:"Что означает?",q:"Ghosting",s:"He is ghosting me",o:["Ужастики","Внезапно пропасть и перестать отвечать","Притворяться","Ночью"],a:1},
+{t:"c",h:"Переведи сленг",q:"You nailed it!",s:"You nailed it!",o:["Прибил","Ты сделал идеально / затащил!","Сломал","Забудь"],a:1},
+{t:"c",h:"Что значит?",q:"Red flag",s:"That is a red flag",o:["Тревожный звоночек / плохой признак","Судья","Отличный знак","Свидание"],a:0},
+{t:"b",h:"Собери сленг",q:"Good vibes only",s:"Good vibes only",w:["only","Good","vibes"],ans:["Good","vibes","only"]}
+]},
+{n:"Урок 2: Сленг в чатах и IT",qs:[
+{t:"c",h:"Переведи",q:"I am broke",s:"I am broke",o:["Сломался","Я на мели / нет денег","Устал","Опоздал"],a:1},
+{t:"c",h:"Что означает?",q:"Cringe",s:"That was so cringe",o:["Круто","Испанский стыд / неловко","Смешно","Страшно"],a:1},
+{t:"c",h:"Что означает?",q:"ASAP",s:"Send it ASAP",o:["Как можно скорее","После обеда","Не срочно","Готово"],a:0},
+{t:"c",h:"Что значит?",q:"TBH",s:"To be honest",o:["Честно говоря","Вернусь позже","Кстати","Спасибо"],a:0},
+{t:"b",h:"Собери: «Без проблем»",q:"No worries at all",s:"No worries at all",w:["all","No","at","worries"],ans:["No","worries","at","all"]}
+]}
+]}
+];
 
-    <div class="main">
-        <div id="scr-test" class="screen active">
-            <div style="color:var(--blue);font-size:12px;font-weight:800;margin-bottom:6px;">🎯 ТЕСТ НА УРОВЕНЬ (<span id="t-step">1/5</span>)</div>
-            <div class="task-heading">Ответь на 5 вопросов, чтобы Фокси определил твой уровень:</div>
-            <div class="mascot-row">
-                <div class="foxy-avatar">🦊</div>
-                <div class="speech-bubble"><div id="t-q">1. Переведи: 'They are my friends'</div></div>
-            </div>
-            <div id="t-opts">
-                <button type="button" class="choice-btn" onclick="pickTest(0)"><span class="choice-num">1</span>Они мои друзья</button>
-                <button type="button" class="choice-btn" onclick="pickTest(1)"><span class="choice-num">2</span>Он мой брат</button>
+var xp=0,hp=5,vip=false,lvl="A1",done={},ti=0,ts=0,cc=null,cl=0,qi=0,pt=[];
+function show(id){var s=document.querySelectorAll('.scr');for(var i=0;i<s.length;i++)s[i].classList.remove('act');document.getElementById(id).classList.add('act');document.getElementById('sheet').classList.remove('show');document.getElementById('nav').style.display=(id==='s-lesson')?'none':'flex';}
+function reTest(){ti=0;ts=0;show('s-test');rTest();}
+function rTest(){var q=tQs[ti];document.getElementById('tstep').innerText=(ti+1)+'/4';document.getElementById('tq').innerText=q.q;var b=document.getElementById('topts');b.innerHTML='';for(var i=0;i<q.o.length;i++){(function(x){var btn=document.createElement('button');btn.type='button';btn.className='opt';btn.innerText=q.o[x];btn.onclick=function(){pickT(x);};b.appendChild(btn);})(i);}}
+function pickT(x){if(x===tQs[ti].a)ts+=tQs[ti].p;ti++;if(ti<tQs.length)rTest();else{lvl=ts>=8?'B2':(ts>=5?'B1':(ts>=2?'A2':'A1'));document.getElementById('hlvl').innerText=lvl;alert('🦊 Фокси определил твой уровень: '+lvl+'!');goCourses();}}
+function goCourses(){show('s-courses');var b=document.getElementById('cbox');b.innerHTML='';for(var i=0;i<DB.length;i++){(function(c){var lk=c.vip&&!vip;var d=document.createElement('div');d.className='card'+(lk?' vip':'');d.innerHTML='<span class="pill '+(lk?'p-vip':'p-free')+'">'+(lk?'🔒 SUPER VIP • ':'✅ БЕСПЛАТНО • ')+c.lvl+'</span><div style="font-size:17px;font-weight:800;margin-bottom:4px">'+c.t+'</div><div style="font-size:13px;color:#afafaf">'+c.d+'</div>';d.onclick=function(){if(lk){if(confirm('👑 Super VIP открывает все разделы (50 ⭐️).\n\nПерейти к оплате?'))buy('vip');}else{cc=c;goPath();}};b.appendChild(d);})(DB[i]);}}
+function goPath(){show('s-path');var bn=document.getElementById('ubanner');bn.className='banner'+(cc.vip?' gold':'');document.getElementById('usub').innerText='УРОВЕНЬ '+cc.lvl;document.getElementById('uname').innerText=cc.t;var tb=document.getElementById('tbox');tb.innerHTML='';var cv=[0,-42,0,42];for(var i=0;i<cc.ls.length;i++){(function(x){var dn=!!done[cc.id+'_'+x];var un=(x===0)||!!done[cc.id+'_'+(x-1)];var nd=document.createElement('div');nd.className='node';nd.style.transform='translateX('+cv[x%4]+'px)';var bt=document.createElement('button');bt.type='button';bt.className='cbtn '+(dn?'done':(un?'cur':'lock'));bt.innerText=dn?'⭐':(un?'🦊':'🔒');bt.onclick=function(){if(!un){alert('🔒 Сначала пройди предыдущий урок!');return;}cl=x;qi=0;show('s-lesson');rQ();};var tg=document.createElement('div');tg.className='ntag';tg.innerText=cc.ls[x].n;nd.appendChild(bt);nd.appendChild(tg);tb.appendChild(nd);})(i);}}
+function rQ(){var ls=cc.ls[cl];var q=ls.qs[qi];document.getElementById('pfill').style.width=Math.max(10,Math.round(qi/ls.qs.length*100))+'%';document.getElementById('qhead').innerText=q.h;document.getElementById('qtxt').innerText=q.q;document.getElementById('sheet').classList.remove('show');var cb=document.getElementById('cchoices');var bb=document.getElementById('cbuild');if(q.t==='b'){cb.style.display='none';bb.style.display='block';document.getElementById('bchk').style.display='block';pt=[];rTiles(q);}else{bb.style.display='none';cb.style.display='block';cb.innerHTML='';for(var i=0;i<q.o.length;i++){(function(x){var bt=document.createElement('button');bt.type='button';bt.className='opt';bt.innerText=(x+1)+'. '+q.o[x];bt.onclick=function(){chkC(x,bt);};cb.appendChild(bt);})(i);}}}
+function fb(ok,sub){var sh=document.getElementById('sheet');sh.className='sheet show '+(ok?'sok':'serr');document.getElementById('stitle').innerText=ok?'🦊 Потрясающе! +15 XP':'❌ Неправильно';document.getElementById('ssub').innerText=sub||'';document.getElementById('sbtn').className='dbtn '+(ok?'bg':'br');}
+function chkC(x,el){var q=cc.ls[cl].qs[qi];var all=document.querySelectorAll('#cchoices .opt');for(var i=0;i<all.length;i++)all[i].disabled=true;if(x===q.a){el.classList.add('ok');xp+=15;spk();fb(true,'');}else{el.classList.add('no');all[q.a].classList.add('ok');hp=Math.max(0,hp-1);fb(false,'Правильно: '+q.o[q.a]);}document.getElementById('hxp').innerText=xp;document.getElementById('rxp').innerText=xp+' XP';document.getElementById('hhp').innerText=hp;}
+function rTiles(q){var sl=document.getElementById('bslots');var pl=document.getElementById('bpool');sl.innerHTML='';pl.innerHTML='';for(var i=0;i<pt.length;i++){(function(pi){var t=document.createElement('button');t.type='button';t.className='tile';t.innerText=q.w[pt[pi]];t.onclick=function(){pt.splice(pi,1);rTiles(q);};sl.appendChild(t);})(i);}for(var j=0;j<q.w.length;j++){(function(wi){var t=document.createElement('button');t.type='button';t.className='tile'+(pt.indexOf(wi)!==-1?' used':'');t.innerText=q.w[wi];t.onclick=function(){pt.push(wi);rTiles(q);};pl.appendChild(t);})(j);}}
+function chkBuild(){var q=cc.ls[cl].qs[qi];var res=[];for(var i=0;i<pt.length;i++)res.push(q.w[pt[i]]);document.getElementById('bchk').style.display='none';if(res.join(' ')===q.ans.join(' ')){xp+=20;spk();fb(true,'Идеально! +20 XP');}else{hp=Math.max(0,hp-1);fb(false,'Правильно: '+q.ans.join(' '));}document.getElementById('hxp').innerText=xp;document.getElementById('rxp').innerText=xp+' XP';document.getElementById('hhp').innerText=hp;}
+function nxt(){qi++;if(qi<cc.ls[cl].qs.length)rQ();else{done[cc.id+'_'+cl]=true;xp+=30;document.getElementById('hxp').innerText=xp;alert('🎉 Урок пройден! +30 XP! Открыт следующий этап.');goPath();}}
+function spk(){if(cc&&'speechSynthesis' in window){var u=new SpeechSynthesisUtterance(cc.ls[cl].qs[qi].s);u.lang='en-US';speechSynthesis.speak(u);}}
+function tab(t,el){var bs=document.querySelectorAll('.nbtn');for(var i=0;i<bs.length;i++)bs[i].classList.remove('act');el.classList.add('act');if(t==='courses')goCourses();else show('s-'+t);}
+function buy(it){var u=(it==='vip')?('https://'+'t.me/$ElaWUcXSCEjkFgAANpAt_vj4fGQ'):('https://'+'t.me/$_nXN6cXSCEjlFgAApjf9EBrY0v4');if(tg&&tg.openTelegramLink)tg.openTelegramLink(u);else window.location.href=u;}
+</script>
+</body>
+</html>
+
