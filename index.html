@@ -457,6 +457,87 @@ function devTest(){
   if(uid!==СЮДА_ВСТАВЬ_СВОЙ_ID)return;
   if(prompt('Пароль разработчика:')==='2212'){stars+=100;xp+=1000;syncStars();updTop();save();alert('🛠 +100 ⭐ и +1000 ⚡!');}
 }
+var wSpin=false,wDeg=0;
+var WHEELS={
+  free:[
+    {w:28,lbl:'⚡80',ico:'⚡ +80 XP',fn:function(){xp+=80;}},
+    {w:24,lbl:'🍓3',ico:'🍓 +3 Еды',fn:function(){food+=3;}},
+    {w:20,lbl:'⚡130',ico:'⚡ +130 XP',fn:function(){xp+=130;}},
+    {w:12,lbl:'❤️3',ico:'❤️ +3 Жизни',fn:function(){if(!vip)hp=Math.min(5,hp+3);}},
+    {w:8,lbl:'❄️1',ico:'❄️ +1 Заморозка',fn:function(){frz+=1;}},
+    {w:5,lbl:'⚡250',ico:'⚡ +250 XP',fn:function(){xp+=250;}},
+    {w:2,lbl:'⭐2',ico:'⭐ +2 Звезды',fn:function(){stars+=2;syncStars();}},
+    {w:1,lbl:'⭐4',ico:'⭐ +4 Звезды',fn:function(){stars+=4;syncStars();}}
+  ],
+  xp:[
+    {w:16,lbl:'⚡150',ico:'⚡ +150 XP',fn:function(){xp+=150;}},
+    {w:14,lbl:'⚡220',ico:'⚡ +220 XP',fn:function(){xp+=220;}},
+    {w:36,lbl:'⚡300',ico:'⚡ +300 XP',fn:function(){xp+=300;}},
+    {w:16,lbl:'⚡360',ico:'⚡ +360 XP',fn:function(){xp+=360;}},
+    {w:9,lbl:'⚡450',ico:'⚡ +450 XP',fn:function(){xp+=450;}},
+    {w:5,lbl:'❄️+🍓',ico:'❄️ +1 Заморозка и 🍓',fn:function(){frz+=1;food+=3;}},
+    {w:3.5,lbl:'⭐4',ico:'⭐ +4 Звезды',fn:function(){stars+=4;syncStars();}},
+    {w:0.5,lbl:'🐯',ico:'🐯 Скин Тигр',fn:function(){if(mySkins.indexOf('tiger')===-1)mySkins.push('tiger');else xp+=450;}}
+  ],
+  star:[
+    {w:16,lbl:'⭐8',ico:'⭐ +8 Звёзд',fn:function(){stars+=8;syncStars();}},
+    {w:15,lbl:'⭐11',ico:'⭐ +11 Звёзд',fn:function(){stars+=11;syncStars();}},
+    {w:36,lbl:'⭐15',ico:'⭐ +15 Звёзд',fn:function(){stars+=15;syncStars();}},
+    {w:16,lbl:'⭐18',ico:'⭐ +18 Звёзд',fn:function(){stars+=18;syncStars();}},
+    {w:8,lbl:'⭐24',ico:'⭐ +24 Звезды',fn:function(){stars+=24;syncStars();}},
+    {w:5,lbl:'❄️+⚡',ico:'❄️ +1 Заморозка и ⚡',fn:function(){frz+=1;xp+=500;}},
+    {w:3.5,lbl:'🐺',ico:'🐺 Скин Волк',fn:function(){if(mySkins.indexOf('wolf')===-1)mySkins.push('wolf');else stars+=18;syncStars();}},
+    {w:0.5,lbl:'👑VIP',ico:'👑 Super VIP!',fn:function(){if(!vip)vip=true;else stars+=35;syncStars();}}
+  ]
+};
+function drawSlots(type){
+  var box=document.getElementById('w-slots'),arr=WHEELS[type];if(!box||!arr)return;
+  box.innerHTML='';
+  for(var i=0;i<8;i++){
+    var ang=i*45+22.5;
+    box.innerHTML+='<div style="position:absolute;top:50%;left:50%;width:46px;margin-left:-23px;margin-top:-10px;transform:rotate('+ang+'deg) translateY(-76px);font-size:12px;font-weight:900;color:#fff;text-shadow:0 1px 3px #000;text-align:center">'+arr[i].lbl+'</div>';
+  }
+}
+function updWheelUI(){
+  var last=parseInt(localStorage.getItem('fx_wfree')||'0',10),diff=86400000-(Date.now()-last);
+  var st=document.getElementById('w-status'),btn=document.getElementById('wbtn-free');
+  if(!st||!btn)return;
+  if(diff<=0){st.innerText='✨ Бесплатный спин готов!';st.style.color='#58cc02';btn.style.opacity='1';}
+  else{st.innerText='⏳ Бесплатный через ~'+Math.ceil(diff/3600000)+' ч.';st.style.color='#afafaf';btn.style.opacity='0.6';}
+}
+function toggleWheel(){
+  var p=document.getElementById('wheel-panel');
+  p.style.display=(p.style.display==='none')?'block':'none';
+  drawSlots('free');updWheelUI();
+}
+function spinWheel(type){
+  if(wSpin)return;
+  drawSlots(type);
+  if(type==='free'){
+    if(Date.now()-parseInt(localStorage.getItem('fx_wfree')||'0',10)<86400000){alert('⏳ Бесплатное колесо доступно раз в 24 часа!');return;}
+  }else if(type==='xp'){
+    if(xp<300){alert('Нужно 300 ⚡ XP!');return;}xp-=300;
+  }else{
+    if(stars<15){alert('Нужно 15 ⭐!');return;}stars-=15;syncStars();
+  }
+  updTop();save();wSpin=true;
+  var pool=WHEELS[type],rnd=Math.random()*100,sum=0,winIdx=0;
+  for(var i=0;i<pool.length;i++){sum+=pool[i].w;if(rnd<=sum){winIdx=i;break;}}
+  var targetDeg=(360-(winIdx*45+22.5))%360;
+  var disc=document.getElementById('w-disc'),res=document.getElementById('w-res');
+  res.innerText='🌀 Колесо крутится...';
+  wDeg+=1800+(targetDeg-(wDeg%360)+360)%360;
+  disc.style.transform='rotate('+wDeg+'deg)';
+  setTimeout(function(){
+    var win=pool[winIdx];win.fn();
+    if(type==='free')localStorage.setItem('fx_wfree',Date.now());
+    localStorage.setItem('fx_skins',JSON.stringify(mySkins));
+    updTop();save();renderSkins();updWheelUI();wSpin=false;
+    res.innerHTML='<span style="color:#58cc02">🎉 Выпало: '+win.ico+'!</span>';
+    alert('🎡 Стрелка остановилась на слоте '+win.lbl+'! Выигрыш: '+win.ico);
+  },3300);
+}
+drawSlots('free');updWheelUI();    
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
 if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
 </script>
