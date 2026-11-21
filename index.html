@@ -357,6 +357,7 @@ function buySkin(id){
   localStorage.setItem('fx_skins',JSON.stringify(mySkins));localStorage.setItem('fx_cur',id);
   updTop();save();renderSkins();alert('🎉 Образ «'+s.name+'» надет!');
 }
+
 function renderSkins(){
   var inv=document.getElementById('inv-skins'),shp=document.getElementById('shop-skins');
   if(inv)inv.innerHTML='';if(shp)shp.innerHTML='';
@@ -368,7 +369,8 @@ function renderSkins(){
     }
     if(shp){
       var slbl=has?(eq?'✅ Надет':'Надеть'):(s.cost+(s.cur==='xp'?' ⚡':' ⭐'));
-      shp.innerHTML+='<div class="card" style="text-align:center;margin:0"><div style="font-size:38px">'+s.ico+'</div><div style="font-weight:800;margin:6px 0">'+s.name+'</div><button type="button" class="sbtn" style="width:100%" onclick="buySkin(\''+s.id+'\')">'+slbl+'</button></div>';
+      var bg=has?(eq?'#58cc02':'#1cb0f6'):(s.cur==='xp'?'#1cb0f6':'#ce82ff');
+      shp.innerHTML+='<div class="card" style="text-align:center;margin:0;border-color:'+(eq?'#58cc02':'#37464f')+'"><div style="font-size:38px">'+s.ico+'</div><div style="font-weight:800;margin:6px 0">'+s.name+'</div><button type="button" class="sbtn" style="width:100%;background:'+bg+';color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.4)" onclick="buySkin(\''+s.id+'\')">'+slbl+'</button></div>';
     }
   });
 }
