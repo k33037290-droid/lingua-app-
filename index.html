@@ -206,8 +206,9 @@ var DB=[
 ]}
 ];
 
-var xp=Number(localStorage.getItem('fx_xp')||0),hp=localStorage.getItem('fx_hp')!==null?Number(localStorage.getItem('fx_hp')):5,vip=localStorage.getItem('foxy_vip')==='1',frz=Number(localStorage.getItem('fx_frz')||0),lvl=localStorage.getItem('fx_lvl')||'',done=JSON.parse(localStorage.getItem('fx_done')||'{}'),ti=0,ts=0,cc=null,cl=0,qi=0,pt=[];
-function save(){localStorage.setItem('fx_xp',xp);localStorage.setItem('fx_hp',hp);localStorage.setItem('fx_lvl',lvl);localStorage.setItem('fx_frz',frz);localStorage.setItem('fx_done',JSON.stringify(done));}
+var xp=0,hp=5,vip=false,frz=0,lvl='',done={},ti=0,ts=0,cc=null,cl=0,qi=0,pt=[];
+function save(){var d=JSON.stringify({xp:xp,hp:hp,vip:vip,frz:frz,lvl:lvl,done:done});try{localStorage.setItem('fx_all',d);}catch(e){}if(tg&&tg.CloudStorage){tg.CloudStorage.setItem('fx_all',d);}}
+function load(raw){if(!raw)return;try{var d=JSON.parse(raw);xp=d.xp||0;hp=(d.hp!==undefined)?d.hp:5;vip=!!d.vip;frz=d.frz||0;lvl=d.lvl||'';done=d.done||{};document.getElementById('hxp').innerText=xp;document.getElementById('rxp').innerText=xp+' XP';document.getElementById('hhp').innerText=vip?'♾️':hp;if(lvl){document.getElementById('hlvl').innerText=lvl;goCourses();}}catch(e){}}
 function show(id){var s=document.querySelectorAll('.scr');for(var i=0;i<s.length;i++)s[i].classList.remove('act');document.getElementById(id).classList.add('act');document.getElementById('sheet').classList.remove('show');document.getElementById('nav').style.display=(id==='s-lesson')?'none':'flex';}
 function reTest(){ti=0;ts=0;show('s-test');rTest();}
 function rTest(){var q=tQs[ti];document.getElementById('tstep').innerText=(ti+1)+'/4';document.getElementById('tq').innerText=q.q;var b=document.getElementById('topts');b.innerHTML='';for(var i=0;i<q.o.length;i++){(function(x){var btn=document.createElement('button');btn.type='button';btn.className='opt';btn.innerText=q.o[x];btn.onclick=function(){pickT(x);};b.appendChild(btn);})(i);}}
@@ -222,9 +223,9 @@ function chkBuild(){var q=cc.ls[cl].qs[qi];var res=[];for(var i=0;i<pt.length;i+
 function nxt(){qi++;if(qi<cc.ls[cl].qs.length)rQ();else{done[cc.id+'_'+cl]=true;xp+=30;document.getElementById('hxp').innerText=xp;document.getElementById('rxp').innerText=xp+' XP';save();alert('🎉 Урок пройден! +30 XP! Прогресс сохранён.');goPath();}}
 function spk(){if(cc&&'speechSynthesis' in window){var u=new SpeechSynthesisUtterance(cc.ls[cl].qs[qi].s);u.lang='en-US';speechSynthesis.speak(u);}}
 function tab(t,el){var bs=document.querySelectorAll('.nbtn');for(var i=0;i<bs.length;i++)bs[i].classList.remove('act');el.classList.add('act');if(t==='courses')goCourses();else show('s-'+t);}
-function buy(it){var u=(it==='vip')?('https://'+'t.me/$ElaWUcXSCEjkFgAANpAt_vj4fGQ'):('https://'+'t.me/$_nXN6cXSCEjlFgAApjf9EBrY0v4');if(tg&&tg.openInvoice){tg.openInvoice(u,function(st){if(st==='paid'){if(it==='vip'){vip=true;localStorage.setItem('foxy_vip','1');document.getElementById('hhp').innerText='♾️';alert('👑 Super VIP активирован!');goCourses();}else{frz+=1;hp=5;document.getElementById('hhp').innerText=vip?'♾️':hp;save();alert('❄️ Заморозка куплена ('+frz+' шт.) и жизни восстановлены!');}}});}else if(tg&&tg.openTelegramLink){tg.openTelegramLink(u);}else{window.location.href=u;}}
-document.getElementById('hxp').innerText=xp;document.getElementById('rxp').innerText=xp+' XP';document.getElementById('hhp').innerText=vip?'♾️':hp;if(lvl){document.getElementById('hlvl').innerText=lvl;goCourses();}
+function buy(it){var u=(it==='vip')?('https://'+'t.me/$ElaWUcXSCEjkFgAANpAt_vj4fGQ'):('https://'+'t.me/$_nXN6cXSCEjlFgAApjf9EBrY0v4');if(tg&&tg.openInvoice){tg.openInvoice(u,function(st){if(st==='paid'){if(it==='vip'){vip=true;save();document.getElementById('hhp').innerText='♾️';alert('👑 Super VIP активирован!');goCourses();}else{frz+=1;hp=5;document.getElementById('hhp').innerText=vip?'♾️':hp;save();alert('❄️ Заморозка куплена ('+frz+' шт.) и жизни восстановлены!');}}});}else if(tg&&tg.openTelegramLink){tg.openTelegramLink(u);}else{window.location.href=u;}}
+try{load(localStorage.getItem('fx_all'));}catch(e){}
+if(tg&&tg.CloudStorage){tg.CloudStorage.getItem('fx_all',function(err,val){if(!err&&val)load(val);});}
 </script>
 </body>
 </html>
-
