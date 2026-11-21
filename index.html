@@ -118,6 +118,19 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
       <button type="button" class="sbtn" onclick="buy('freeze')">15 ⭐️</button>
     </div>
   </div>
+  <div id="s-inv" class="scr">
+    <h2 style="font-size:20px;margin-bottom:14px">🎒 Мой инвентарь</h2>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+      <div><b>🍓 Вкусняшки для Фокси</b><br><small style="color:#afafaf">Восстанавливают сытость (+35%)</small></div>
+      <div style="display:flex;align-items:center;gap:8px"><b id="ifood" style="font-size:16px">2 шт.</b><button type="button" class="sbtn" style="background:#ff9600" onclick="feedFox()">Покормить</button></div>
+    </div>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+      <div><b>❄️ Заморозка серии</b><br><small style="color:#afafaf">Защищает ударный режим 🔥</small></div>
+      <b id="ifrz" style="font-size:16px;color:#38bdf8">0 шт.</b>
+    </div>
+    <h3 style="font-size:17px;margin:16px 0 10px">🎭 Образы Лисёнка</h3>
+    <div id="inv-skins" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+  </div>
 </div>
 <div class="sheet" id="sheet"><div style="font-size:19px;font-weight:800" id="stitle">✅ Верно!</div><div style="font-size:14px;font-weight:700" id="ssub"></div><button type="button" class="dbtn bg" id="sbtn" onclick="nxt()">ПРОДОЛЖИТЬ</button></div>
 <div class="nav" id="nav">
