@@ -53,13 +53,26 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
 </head>
 <body>
 <div class="top">
-    <div><span class="lvl" id="hlvl" onclick="devTest()">A1</span></div>
-
-  <div style="color:#38bdf8;cursor:pointer" onclick="tab('shop',document.querySelectorAll('.nbtn'))">⭐ <span id="hstars">0</span></div>
-  <div style="color:#ff9600">🍖 <span id="hfull">100</span>%</div>
-  <div style="color:#ffc800">⚡ <span id="hxp">0</span></div>
-  <div style="color:#ff4b4b">❤️ <span id="hhp">5</span></div>
+  <div><span class="lvl" id="hlvl" onclick="devTest()">A1</span></div>
+  <div style="cursor:pointer;background:#1e293b;border:1px solid #38bdf8;border-radius:12px;padding:5px 11px" onclick="toggleWallet()">
+    <span>💰 Баланс: ⭐ <b id="mini-stars">0</b> · 💎 <b id="mini-xp">0</b></span>
+    <span id="w-arr" style="font-size:10px;margin-left:4px;color:#38bdf8">▼</span>
+  </div>
 </div>
+<div id="wallet-drop" style="display:none;position:fixed;top:50px;left:12px;right:12px;background:#18242a;border:2px solid #38bdf8;border-radius:18px;padding:14px;z-index:50;box-shadow:0 12px 30px rgba(0,0,0,0.65)">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <span style="font-size:12px;font-weight:800;color:#94a3b8">💼 МОИ РЕСУРСЫ</span>
+    <button type="button" class="sbtn" style="padding:5px 10px;font-size:11px;background:#1cb0f6" onclick="toggleWallet();tab('shop',document.querySelectorAll('.nbtn'))">+ Пополнить ⭐</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;font-weight:800">
+    <div style="background:#131f24;padding:9px 11px;border-radius:12px;border:1px solid #37464f">⭐ Звёзды: <span id="hstars" style="color:#ffc800">0</span></div>
+    <div style="background:#131f24;padding:9px 11px;border-radius:12px;border:1px solid #37464f">🏆 Кубки: <span id="hcups" style="color:#ffc800">0</span></div>
+    <div style="background:#131f24;padding:9px 11px;border-radius:12px;border:1px solid #37464f">💎 Кристаллы: <span id="hxp" style="color:#38bdf8">0</span></div>
+    <div style="background:#131f24;padding:9px 11px;border-radius:12px;border:1px solid #37464f">🍖 Сытость: <span id="hfull" style="color:#ff9600">100</span>%</div>
+    <div style="grid-column:span 2;background:#131f24;padding:9px 11px;border-radius:12px;border:1px solid #37464f;text-align:center">❤️ Жизни: <span id="hhp" style="color:#ff4b4b">5</span></div>
+  </div>
+</div>
+
 <div class="main">
   <div id="s-test" class="scr act">
     <div style="color:#1cb0f6;font-size:12px;font-weight:800;margin-bottom:6px">🎯 ТЕСТ НА УРОВЕНЬ (<span id="tstep">1/4</span>)</div>
