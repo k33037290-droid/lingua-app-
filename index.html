@@ -717,6 +717,10 @@ updWalletMini();showTop(10);
 var _origAlert=window.alert;
 window.alert=function(m){_origAlert(fixGemTxt(m));};
 if(tg&&tg.showAlert){var _tgAlert=tg.showAlert.bind(tg);tg.showAlert=function(m,cb){_tgAlert(fixGemTxt(m),cb);};}
+  if(typeof goChain==='function')goChain();
+setTimeout(function(){
+  if(typeof goChain==='function')goChain();
+},300);
 </script>
 </body>
 </html>
