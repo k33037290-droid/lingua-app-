@@ -362,16 +362,18 @@ function renderSkins(){
   if(inv)inv.innerHTML='';if(shp)shp.innerHTML='';
   SKINS.forEach(function(s){
     var has=mySkins.indexOf(s.id)!==-1,eq=curSkin===s.id;
-    if(inv&&has){
-      inv.innerHTML+='<div class="card" style="text-align:center;margin:0;border-color:'+(eq?'#58cc02':'#37464f')+'"><div style="font-size:38px">'+s.ico+'</div><div style="font-weight:800;margin:6px 0">'+s.name+'</div><button type="button" class="sbtn" style="width:100%;background:'+(eq?'#58cc02':'#1cb0f6')+';color:#fff" onclick="buySkin(\''+s.id+'\')">'+(eq?'✅ Надет':'Надеть')+'</button></div>';
+    var lbl=has?(eq?'✅ Надет':'Надеть'):('🔒 '+s.cost+(s.cur==='xp'?' ⚡':' ⭐'));
+    if(inv){
+      inv.innerHTML+='<div class="card" style="text-align:center;margin:0;opacity:'+(has?'1':'0.55')+';border-color:'+(eq?'#58cc02':'#37464f')+'"><div style="font-size:38px">'+s.ico+'</div><div style="font-weight:800;margin:6px 0">'+s.name+'</div><button type="button" class="sbtn" style="width:100%;background:'+(has?(eq?'#58cc02':'#1cb0f6'):'#263740')+';color:'+(has?'#fff':'#afafaf')+'" onclick="buySkin(\''+s.id+'\')">'+lbl+'</button></div>';
     }
     if(shp){
-      var lbl=has?(eq?'✅ Надет':'Надеть'):(s.cost+(s.cur==='xp'?' ⚡':' ⭐'));
-      shp.innerHTML+='<div class="card" style="text-align:center;margin:0"><div style="font-size:38px">'+s.ico+'</div><div style="font-weight:800;margin:6px 0">'+s.name+'</div><button type="button" class="sbtn" style="width:100%" onclick="buySkin(\''+s.id+'\')">'+lbl+'</button></div>';
+      var slbl=has?(eq?'✅ Надет':'Надеть'):(s.cost+(s.cur==='xp'?' ⚡':' ⭐'));
+      shp.innerHTML+='<div class="card" style="text-align:center;margin:0"><div style="font-size:38px">'+s.ico+'</div><div style="font-weight:800;margin:6px 0">'+s.name+'</div><button type="button" class="sbtn" style="width:100%" onclick="buySkin(\''+s.id+'\')">'+slbl+'</button></div>';
     }
   });
 }
 renderSkins();
+
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
 if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
 </script>
