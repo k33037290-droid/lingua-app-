@@ -16,8 +16,6 @@
       --duo-green-shadow: #58a700;
       --duo-blue: #1cb0f6;
       --duo-blue-shadow: #1899d6;
-      --duo-purple: #ce82ff;
-      --duo-purple-shadow: #a55eea;
       --duo-locked: #37464f;
       --duo-locked-shadow: #2b3840;
       --duo-gold: #ffc800;
@@ -120,6 +118,7 @@
       cursor: pointer;
     }
 
+    /* Извилистая дорожка */
     .path-container {
       display: flex;
       flex-direction: column;
@@ -161,7 +160,7 @@
       justify-content: center;
       cursor: pointer;
       position: relative;
-      transition: transform 0.1s, box-shadow 0.1s;
+      z-index: 2;
     }
 
     .lesson-btn:active {
@@ -178,12 +177,6 @@
       background-color: var(--duo-locked);
       box-shadow: 0 6px 0 var(--duo-locked-shadow);
       color: #6b7d87;
-      cursor: not-allowed;
-    }
-
-    .lesson-btn.locked:active {
-      transform: none;
-      box-shadow: 0 6px 0 var(--duo-locked-shadow);
     }
 
     .start-tooltip {
@@ -199,26 +192,7 @@
       padding: 6px 14px;
       border-radius: 12px;
       white-space: nowrap;
-      animation: bounce 1.4s infinite ease-in-out;
       z-index: 10;
-    }
-
-    .start-tooltip::after {
-      content: "";
-      position: absolute;
-      bottom: -6px;
-      left: 50%;
-      transform: translateX(-50%) rotate(45deg);
-      width: 10px;
-      height: 10px;
-      background-color: var(--surface-color);
-      border-right: 2px solid var(--border-color);
-      border-bottom: 2px solid var(--border-color);
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translate(-50%, 0); }
-      50% { transform: translate(-50%, -6px); }
     }
 
     .bottom-nav {
@@ -326,14 +300,13 @@
       background: var(--duo-locked);
       box-shadow: 0 4px 0 var(--duo-locked-shadow);
       color: #6b7d87;
-      cursor: not-allowed;
     }
   </style>
 </head>
 <body>
 
   <div class="top-bar">
-    <div class="course-selector" id="course-btn">
+    <div class="course-selector" onclick="openCourseModal()">
       <span id="current-course-icon">🐍</span>
       <span id="current-course-name">Python</span>
       <span style="font-size: 11px; opacity: 0.8;">▼</span>
@@ -347,48 +320,47 @@
 
   <div class="unit-banner" id="unit-banner">
     <div>
-      <div class="unit-subtitle" id="unit-subtitle">Раздел 1</div>
+      <div class="unit-subtitle" id="unit-subtitle">Раздел 1 • Модуль 1</div>
       <div class="unit-title" id="unit-title">Переменные и вывод данных</div>
     </div>
-    <button class="guide-btn" id="guide-btn">📖</button>
+    <button class="guide-btn" onclick="alert('Справочник: print() выводит текст, = задаёт переменную.')">📖</button>
   </div>
 
-  <div class="path-container" id="path-container"></div>
+  <!-- Дорожка с кружками отрисована сразу в HTML -->
+  <div class="path-container" id="path-container">
+    <div class="node-wrapper" style="transform: translateX(0px);">
+      <button class="lesson-btn completed" onclick="openLesson(0)">⭐</button>
+    </div>
+    <div class="node-wrapper" style="transform: translateX(-48px);">
+      <div class="active-ring"></div>
+      <div class="start-tooltip">НАЧАТЬ</div>
+      <button class="lesson-btn" onclick="openLesson(1)">📘</button>
+    </div>
+    <div class="node-wrapper" style="transform: translateX(-72px);">
+      <button class="lesson-btn locked" onclick="openLesson(2)">🔒</button>
+    </div>
+    <div class="node-wrapper" style="transform: translateX(-48px);">
+      <button class="lesson-btn locked" onclick="openLesson(3)">🔒</button>
+    </div>
+    <div class="node-wrapper" style="transform: translateX(0px);">
+      <button class="lesson-btn locked" onclick="openLesson(4)">🔒</button>
+    </div>
+  </div>
 
   <div class="bottom-nav">
-    <div class="nav-item active" id="nav-learn">🏠</div>
-    <div class="nav-item" id="nav-league">🏆</div>
-    <div class="nav-item" id="nav-profile">👤</div>
+    <div class="nav-item active" onclick="alert('Вы на главной дорожке обучения!')">🏠</div>
+    <div class="nav-item" onclick="alert('Лига лидеров: вы на 3 месте! 🏆')">🏆</div>
+    <div class="nav-item" onclick="alert('Профиль: ударный режим 3 дня 🔥')">👤</div>
   </div>
 
-  <div class="modal-overlay" id="course-modal">
-    <div class="modal-sheet">
+  <div class="modal-overlay" id="course-modal" onclick="closeModal(event, 'course-modal')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
       <div class="modal-title">Выберите курс</div>
-      <div id="course-list"></div>
+      <div class="course-option" onclick="selectCourse('python')"><span>🐍 Python</span></div>
+      <div class="course-option" onclick="selectCourse('english')"><span>🇬🇧 English</span></div>
     </div>
   </div>
 
-  <div class="modal-overlay" id="lesson-modal">
-    <div class="modal-sheet">
+  <div class="modal-overlay" id="lesson-modal" onclick="closeModal(event, 'lesson-modal')">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
       <div class="modal-title" id="lesson-modal-title">Задание</div>
-      <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 16px; line-height: 1.4;" id="lesson-question"></p>
-      <div id="quiz-options"></div>
-      <button class="action-btn" id="check-answer-btn" disabled>Проверить</button>
-    </div>
-  </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      try {
-        if (window.Telegram && window.Telegram.WebApp) {
-          window.Telegram.WebApp.ready();
-          window.Telegram.WebApp.expand();
-        }
-      } catch (e) {}
-
-      const courses = {
-        python: {
-          name: "Python",
-          icon: "🐍",
-          bannerColor: "",
-          unitSubtitle: "Раздел 1 • Модуль 1",
