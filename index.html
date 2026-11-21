@@ -121,6 +121,21 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
       <div><b>🍓 Еда для Фокси (5 шт.)</b><br><small style="color:#afafaf">Бонус +50% XP за сытого лиса</small></div>
       <button type="button" class="sbtn" style="background:#ff9600" onclick="buyFoodXP()">60 ⚡</button>
     </div>
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div><b>❄️ Заморозка + 5 жизней</b><br><small style="color:#afafaf">Защита серии и восстановление ❤️</small></div>
+      <button type="button" class="sbtn" onclick="buy('freeze')">15 ⭐️</button>
+    </div>
+    <h3 style="font-size:16px;margin:14px 0 8px">🎭 Образы Лисёнка (в Лиге и уроках)</h3>
+    <div id="skins-box"></div>
+  </div>
+</div>
+<div class="sheet" id="sheet"><div style="font-size:18px;font-weight:800" id="stitle">✅ Верно!</div><div style="font-size:13px;font-weight:700" id="ssub"></div><button type="button" class="dbtn bg" id="sbtn" onclick="nxt()">ПРОДОЛЖИТЬ</button></div>
+<div class="nav" id="nav">
+  <button type="button" class="nbtn act" onclick="tab('path',this)"><span style="font-size:19px">🏠</span>Тропа</button>
+  <button type="button" class="nbtn" onclick="tab('rank',this)"><span style="font-size:19px">🏆</span>Лига</button>
+  <button type="button" class="nbtn" onclick="tab('shop',this)"><span style="font-size:19px">🛒</span>Магазин</button>
+</div>
+
 <script>
 var tg=window.Telegram?window.Telegram.WebApp:null;if(tg)tg.expand();
 var tQs=[
