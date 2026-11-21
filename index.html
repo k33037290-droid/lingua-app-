@@ -289,8 +289,7 @@
       box.innerHTML='';
       UNITS.forEach(function(u,ui){
         var lockVip=u.vip&&!st.vip;
-        var uh=document.createElement('div');uh.className='unit';uh.innerHTML='<span>'+u.title+' ('+u.lvl+')</span><span>'+(lockVip?'👑 VIP':'📖')+'</span>';box.appendChild(uh);
-        u.steps.forEach(function(s,si){
+        var uh=document.createElement('div');uh.className='unit';uh.innerHTML='<span>'+u.title+' ('+u.lvl+')</span><span>'+(lockVip?'VIP':'📖')+'</span>';box.appendChild(uh);        u.steps.forEach(function(s,si){
           var key=ui+'_'+si,done=!!st.prog[key];
           var d=document.createElement('div');
           d.className='node'+(done?' done':'')+(lockVip?' lock':'');
