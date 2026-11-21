@@ -606,7 +606,7 @@ function usePromo(){
 }
 function shareRef(){
   var uid=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)?tg.initDataUnsafe.user.id:'0';
-  var link='https://t.me('Учи английский с Фокси 🦊, крути Колесо Фортуны 🎡 и забирай призы!');
+  var link='https:/'+'/t.me/share/url?url=https:/'+'/t.me/LinguaPro_bot?start=ref_'+uid;
   if(tg&&tg.openTelegramLink)tg.openTelegramLink(link);else window.open(link,'_blank');
 }
 function showTop(lim){
