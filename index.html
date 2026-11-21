@@ -395,10 +395,21 @@
         box.appendChild(d);
       });
     }
-    function payStars(cnt,url){
-      if(tg&&tg.openTelegramLink)tg.openTelegramLink(url);
-      else window.open(url,'_blank');
+        function payStars(cnt,url){
+      var LINKS={
+        25:'https://t.me/$AXEIHMXSCEgNGAAA-QtHj9NLseU',
+        50:'https://t.me/$B_kc-8XSCEgOGAAAfxsDO8eOo40',
+        100:'https://t.me/$AHPhCMXSCEgPGAAAyxOkjmH_F8A',
+        250:'https://t.me/$KHUp-cXSCEgQGAAAFMllqAfzVOg'
+      };
+      var link=LINKS[cnt]||url;
+      if(tg&&tg.openTelegramLink){
+        tg.openTelegramLink(link);
+      }else{
+        window.open(link,'_blank');
+      }
     }
+
     function buyVip(){
       if(st.vip){alert('👑 VIP уже активен!');return;}
       if(st.stars<150){alert('⭐ Нужно 150 Звёзд!');return;}
