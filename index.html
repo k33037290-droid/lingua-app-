@@ -655,20 +655,23 @@ function applyExtra(raw){
     var d=JSON.parse(raw||'null');
     if(!d)return;
     if(typeof d.xp==='number')xp=d.xp;
-    if(d.done&&typeof done!=='undefined')done=d.done;
+    if(d.prog&&typeof prog!=='undefined')prog=d.prog;
     if(typeof d.vip==='boolean')vip=d.vip;
     if(d.lvl&&typeof lvl!=='undefined')lvl=d.lvl;
     if(typeof d.lxp==='number')leagueXp=d.lxp;
     updTop();updWalletMini();
-    if(typeof renderPath==='function')renderPath();
-    if((typeof done!=='undefined'&&done.length>0)||xp>0||stars>0||vip)show('s-path');
+    if(typeof goChain==='function')goChain();
+    if((d.prog&&Object.keys(d.prog).length>0)||xp>0||stars>0||vip){
+      show('s-path');
+      if(typeof goChain==='function')goChain();
+    }
   }catch(e){}
 }
 function saveFull(){
   try{
     var str=JSON.stringify({
       xp:xp,
-      done:(typeof done!=='undefined'?done:[]),
+      prog:(typeof prog!=='undefined'?prog:{}),
       vip:vip,
       lvl:(typeof lvl!=='undefined'?lvl:'A1'),
       lxp:leagueXp
