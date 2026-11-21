@@ -394,7 +394,40 @@ function renderSkins(){
   });
 }
 renderSkins();
-
+var spinning=false;
+function openCase(type){
+  if(spinning)return;
+  if(type==='norm'){if(xp<200){alert('Нужно 200 ⚡!');return;}xp-=200;}
+  else{if(stars<25){alert('Нужно 25 ⭐!');return;}stars-=25;syncStars();}
+  updTop();save();spinning=true;
+  var pool=(type==='norm')?[
+    {ico:'🍓 +2 Еды',fn:function(){food+=2;}},
+    {ico:'⚡ +150 XP',fn:function(){xp+=150;}},
+    {ico:'❄️ +1 Заморозка',fn:function(){frz+=1;}},
+    {ico:'⚡ +400 XP',fn:function(){xp+=400;}},
+    {ico:'🐼 Скин Панда',fn:function(){if(mySkins.indexOf('panda')===-1)mySkins.push('panda');else xp+=300;}}
+  ]:[
+    {ico:'❄️ +2 Заморозки',fn:function(){frz+=2;}},
+    {ico:'⚡ +800 XP',fn:function(){xp+=800;}},
+    {ico:'🦁 Скин Лев VIP',fn:function(){if(mySkins.indexOf('lion')===-1)mySkins.push('lion');else stars+=20;syncStars();}},
+    {ico:'⭐ +35 Звёзд',fn:function(){stars+=35;syncStars();}},
+    {ico:'🐲 Скин Дракон',fn:function(){if(mySkins.indexOf('dragon')===-1)mySkins.push('dragon');else stars+=40;syncStars();}},
+    {ico:'👑 Super VIP!',fn:function(){if(!vip)vip=true;else stars+=45;syncStars();}}
+  ];
+  var box=document.getElementById('case-box'),sp=document.getElementById('case-spin'),t=0;
+  box.style.display='block';
+  var iv=setInterval(function(){
+    var r=pool[Math.floor(Math.random()*pool.length)];
+    sp.innerText=r.ico;t++;
+    if(t>=18){
+      clearInterval(iv);r.fn();
+      localStorage.setItem('fx_skins',JSON.stringify(mySkins));
+      updTop();save();renderSkins();spinning=false;
+      sp.innerHTML='<span style="color:#58cc02">🎉 '+r.ico+'</span>';
+      setTimeout(function(){alert('🎁 Выпал приз: '+r.ico+'!');},150);
+    }
+  },90);
+}
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
 if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
 </script>
