@@ -233,46 +233,119 @@ function nxt(){
 }
 function spk(){if('speechSynthesis' in window){var u=new SpeechSynthesisUtterance(qList[qi].s);u.lang='en-US';speechSynthesis.speak(u);}}
 function renderRank(){
-  var list=[{n:'🥇 Alex_Pro',x:2450},{n:'🥈 Maria_Eng',x:1980},{n:'🥉 Max_Dev',x:1640},{n:'4. Kate_US',x:1420},{n:'5. Dima_IT',x:1190},{n:'6. Anna_Sky',x:980},{n:'7. Leo_Fox',x:810},{n:'8. Mila_B2',x:650},{n:'9. Oleg_Pro',x:520}];
-  for(var i=10;i<=200;i++)list.push({n:i+'. User_'+i,x:Math.max(10,500-i*2)});
+  var list=[
+    {n:'🥇 Alex_Pro',x:2450},{n:'🥈 Maria_Eng',x:1980},
+    {n:'🥉 Max_Dev',x:1640},{n:'4. Kate_US',x:1420},
+    {n:'5. Dima_IT',x:1190},{n:'6. Anna_Sky',x:980}
+  ];
+  for(var i=7;i<=200;i++){
+    list.push({n:i+'. User_'+i,x:Math.max(10,500-i*2)});
+  }
   list.push({n:getSkinIco()+' Ты',x:xp,me:true});
   list.sort(function(a,b){return b.x-a.x;});
-  var box=document.getElementById('rank-list');box.innerHTML='';
+  var box=document.getElementById('rank-list');
+  box.innerHTML='';
   var lim=show200?Math.min(200,list.length):10;
-  for(var j=0;j<lim;j++){var r=list[j];box.innerHTML+='<div class="card" style="padding:9px 12px;margin-bottom:6px;display:flex;justify-content:space-between;'+(r.me?'border-color:#1cb0f6':'')+'"><span>'+(r.me?'<b>#'+(j+1)+' '+r.n+'</b>':r.n)+'</span><b style="color:#ffc800">'+r.x+' XP</b></div>';}
+  for(var j=0;j<lim;j++){
+    var r=list[j];
+    var st=r.me?'border-color:#1cb0f6':'';
+    var nm=r.me?'<b>#'+(j+1)+' '+r.n+'</b>':r.n;
+    box.innerHTML+='<div class="card" style="padding:9px;margin-bottom:6px;display:flex;justify-content:space-between;'+st+'"><span>'+nm+'</span><b style="color:#ffc800">'+r.x+' XP</b></div>';
+  }
   var hb=document.getElementById('pvp-hist');
   if(hb){
     hb.innerHTML='<h3 style="font-size:15px;margin-bottom:8px">📜 История боёв ('+hist.length+')</h3>';
-    if(!hist.length)hb.innerHTML+='<div style="color:#afafaf;font-size:12px">Пока нет боёв!</div>';
-    else for(var h=0;h<hist.length;h++)hb.innerHTML+='<div class="card" style="padding:8px 12px;margin-bottom:6px;font-size:13px;display:flex;justify-content:space-between"><span>'+hist[h].t+'</span><b>'+hist[h].r+'</b></div>';
+    if(!hist.length){
+      hb.innerHTML+='<div style="color:#afafaf;font-size:12px">Пока нет боёв!</div>';
+    }else{
+      for(var h=0;h<hist.length;h++){
+        hb.innerHTML+='<div class="card" style="padding:8px;margin-bottom:6px;font-size:13px;display:flex;justify-content:space-between"><span>'+hist[h].t+'</span><b>'+hist[h].r+'</b></div>';
+      }
+    }
   }
 }
-function toggleTop200(){show200=!show200;document.getElementById('top200-btn').innerText=show200?'🔼 СВЕРНУТЬ ДО ТОП-10':'📜 ПОКАЗАТЬ ТОП-200';renderRank();}
-function startPvP(){var rv=['Alex_Pro','Maria_Eng','Dima_IT','Kate_US'];pRival=rv[Math.floor(Math.random()*rv.length)];pQs=PVP_POOL.slice().sort(function(){return .5-Math.random();}).slice(0,5);pIdx=0;pMe=0;pBot=0;show('s-pvp');nextPvP();}
+function toggleTop200(){
+  show200=!show200;
+  document.getElementById('top200-btn').innerText=show200?'🔼 СВЕРНУТЬ':'📜 ПОКАЗАТЬ ТОП-200';
+  renderRank();
+}
+function startPvP(){
+  var rv=['Alex_Pro','Maria_Eng','Dima_IT','Kate_US'];
+  pRival=rv[Math.floor(Math.random()*rv.length)];
+  pQs=PVP_POOL.slice().sort(function(){return .5-Math.random();}).slice(0,5);
+  pIdx=0;pMe=0;pBot=0;show('s-pvp');nextPvP();
+}
 function nextPvP(){
   clearInterval(pTmr);
   if(pIdx>=pQs.length){
-    var win=pMe>=pBot;xp=Math.max(0,xp+(win?30:-15));
+    var win=pMe>=pBot;
+    xp=Math.max(0,xp+(win?30:-15));
     hist.unshift({t:(win?'🏆 Победа: ':'💀 Поражение: ')+pRival+' ('+pMe+':'+pBot+')',r:(win?'+30 XP':'-15 XP')});
-    if(hist.length>15)hist.pop();updTop();save();
-    alert((win?'🏆 ПОБЕДА! +30 XP':'💀 Поражение! -15 XP'));
-    tab('rank',document.querySelectorAll('.nbtn'));return;
+    if(hist.length>15)hist.pop();
+    updTop();save();
+    alert(win?'🏆 ПОБЕДА! +30 XP':'💀 Поражение! -15 XP');
+    tab('rank',document.querySelectorAll('.nbtn'));
+    return;
   }
-  pSec=10;document.getElementById('pvp-me').innerText=getSkinIco()+' Ты: '+pMe;document.getElementById('pvp-bot').innerText='🐺 '+pRival+': '+pBot;document.getElementById('pvp-tmr').innerText='⏱ '+pSec+'с';
-  var q=pQs[pIdx];document.getElementById('pvp-q').innerText=(pIdx+1)+'/5: '+q.q;
+  pSec=10;
+  document.getElementById('pvp-me').innerText=getSkinIco()+' Ты: '+pMe;
+  document.getElementById('pvp-bot').innerText='🐺 '+pRival+': '+pBot;
+  document.getElementById('pvp-tmr').innerText='⏱ '+pSec+'с';
+  var q=pQs[pIdx];
+  document.getElementById('pvp-q').innerText=(pIdx+1)+'/5: '+q.q;
   var ob=document.getElementById('pvp-opts');ob.innerHTML='';
-  for(var i=0;i<q.o.length;i++){(function(x){var bt=document.createElement('button');bt.type='button';bt.className='opt';bt.innerText=q.o[x];bt.onclick=function(){if(x===q.a)pMe++;if(Math.random()>.45)pBot++;pIdx++;nextPvP();};ob.appendChild(bt);})(i);}
-  pTmr=setInterval(function(){pSec--;document.getElementById('pvp-tmr').innerText='⏱ '+pSec+'с';if(pSec<=0){if(Math.random()>.4)pBot++;pIdx++;nextPvP();}},1000);
+  for(var i=0;i<q.o.length;i++){
+    (function(x){
+      var bt=document.createElement('button');
+      bt.type='button';bt.className='opt';bt.innerText=q.o[x];
+      bt.onclick=function(){if(x===q.a)pMe++;if(Math.random()>.45)pBot++;pIdx++;nextPvP();};
+      ob.appendChild(bt);
+    })(i);
+  }
+  pTmr=setInterval(function(){
+    pSec--;document.getElementById('pvp-tmr').innerText='⏱ '+pSec+'с';
+    if(pSec<=0){if(Math.random()>.4)pBot++;pIdx++;nextPvP();}
+  },1000);
 }
 function renderShop(){
   var sb=document.getElementById('skins-box');sb.innerHTML='';
-  for(var i=0;i<SKINS.length;i++){(function(sk){var has=vip||owned.indexOf(sk.id)!==-1,act=skin===sk.id;sb.innerHTML+='<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px"><div><span style="font-size:22px">'+sk.ico+'</span> <b>'+sk.name+'</b></div><button type="button" class="sbtn" style="background:'+(act?'#58cc02;color:#fff':(has?'#1cb0f6;color:#fff':'#ffc800'))+'" onclick="pickSkin(\''+sk.id+'\','+sk.cost+')">'+(act?'НАДЕТО':(has?'НАДЕТЬ':sk.cost+' ⚡'))+'</button></div>';})(SKINS[i]);}
+  for(var i=0;i<SKINS.length;i++){
+    (function(sk){
+      var has=vip||owned.indexOf(sk.id)!==-1;
+      var act=skin===sk.id;
+      var bg=act?'#58cc02;color:#fff':(has?'#1cb0f6;color:#fff':'#ffc800');
+      var tx=act?'НАДЕТО':(has?'НАДЕТЬ':sk.cost+' ⚡');
+      sb.innerHTML+='<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><span style="font-size:22px">'+sk.ico+'</span> <b>'+sk.name+'</b></div><button type="button" class="sbtn" style="background:'+bg+'" onclick="pickSkin(\''+sk.id+'\','+sk.cost+')">'+tx+'</button></div>';
+    })(SKINS[i]);
+  }
 }
-function pickSkin(id,cost){var has=vip||owned.indexOf(id)!==-1;if(!has){if(xp<cost){alert('⚡ Нужно '+cost+' XP!');return;}xp-=cost;owned.push(id);}skin=id;updTop();save();renderShop();}
-function tab(t,el){var bs=document.querySelectorAll('.nbtn');for(var i=0;i<bs.length;i++)bs[i].classList.remove('act');if(el)el.classList.add('act');if(t==='path')goChain();else{show('s-'+t);if(t==='rank')renderRank();if(t==='shop')renderShop();}}
-function buy(it){var u=(it==='vip')?('https://'+'t.me/$ElaWUcXSCEjkFgAANpAt_vj4fGQ'):('https://'+'t.me/$_nXN6cXSCEjlFgAApjf9EBrY0v4');if(tg&&tg.openInvoice){tg.openInvoice(u,function(st){if(st==='paid'){if(it==='vip'){vip=true;updTop();save();alert('👑 Super VIP активирован!');goChain();}else{frz+=1;hp=5;updTop();save();alert('❄️ Заморозка куплена!');}}});}else if(tg&&tg.openTelegramLink)tg.openTelegramLink(u);else window.location.href=u;}
+function pickSkin(id,cost){
+  var has=vip||owned.indexOf(id)!==-1;
+  if(!has){if(xp<cost){alert('⚡ Нужно '+cost+' XP!');return;}xp-=cost;owned.push(id);}
+  skin=id;updTop();save();renderShop();
+}
+function tab(t,el){
+  var bs=document.querySelectorAll('.nbtn');
+  for(var i=0;i<bs.length;i++)bs[i].classList.remove('act');
+  if(el)el.classList.add('act');
+  if(t==='path')goChain();
+  else{show('s-'+t);if(t==='rank')renderRank();if(t==='shop')renderShop();}
+}
+function buy(it){
+  var u=(it==='vip')?('https://'+'t.me/$ElaWUcXSCEjkFgAANpAt_vj4fGQ'):('https://'+'t.me/$_nXN6cXSCEjlFgAApjf9EBrY0v4');
+  if(tg&&tg.openInvoice){
+    tg.openInvoice(u,function(st){
+      if(st==='paid'){
+        if(it==='vip'){vip=true;updTop();save();alert('👑 Super VIP активирован!');goChain();}
+        else{frz+=1;hp=5;updTop();save();alert('❄️ Заморозка куплена!');}
+      }
+    });
+  }else if(tg&&tg.openTelegramLink)tg.openTelegramLink(u);
+  else window.location.href=u;
+}
 try{load(localStorage.getItem('fx_v3'));}catch(e){}
 if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v3',function(err,val){if(!err&&val)load(val);});
 </script>
 </body>
 </html>
+
