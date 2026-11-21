@@ -189,6 +189,7 @@
     <button type="button" class="nbtn" onclick="goTab('s-shop',3)"><span>🛒</span>Магазин</button>
   </div>
   <script>
+    window.onerror=function(m,u,l){alert('Ошибка в строке '+l+': '+m);};
     var tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
     if(tg){tg.ready();tg.expand();}
     var st={stars:0,gems:0,cups:0,hp:5,full:100,frz:0,lvl:'A1',vip:false,skin:'fox',owned:['fox'],prog:{},errs:[],promos:[],freeAt:0,doneTest:false};
