@@ -117,6 +117,25 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
       <div><b>❄️ Заморозка + 5 жизней</b><br><small style="color:#afafaf">Защита серии 🔥 и полное восстановление ❤️</small></div>
       <button type="button" class="sbtn" onclick="buy('freeze')">15 ⭐️</button>
     </div>
+   <h3 style="font-size:17px;margin:16px 0 10px">🎁 Кейсы с призами</h3>
+    <div id="case-box" class="card" style="display:none;text-align:center;border-color:#ffc800;background:#18242a">
+      <div style="font-size:12px;color:#afafaf;font-weight:800;margin-bottom:6px">🎰 РУЛЕТКА ПРИЗОВ...</div>
+      <div id="case-spin" style="font-size:32px;padding:12px;background:#131f24;border-radius:14px;border:2px solid #37464f;font-weight:900">🎁</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div class="card" style="text-align:center;margin:0;border-color:#1cb0f6">
+        <div style="font-size:38px">📦</div>
+        <div style="font-weight:800;margin:6px 0">Обычный кейс</div>
+        <div style="font-size:11px;color:#afafaf;margin-bottom:8px">Еда, XP, Панда 🐼</div>
+        <button type="button" class="sbtn" style="width:100%;background:#1cb0f6;color:#fff" onclick="openCase('norm')">200 ⚡</button>
+      </div>
+      <div class="card" style="text-align:center;margin:0;border-color:#ffc800">
+        <div style="font-size:38px">👑</div>
+        <div style="font-weight:800;margin:6px 0">Легендарный</div>
+        <div style="font-size:11px;color:#afafaf;margin-bottom:8px">VIP, Дракон 🐲, ⭐</div>
+        <button type="button" class="sbtn" style="width:100%;background:#ce82ff;color:#fff" onclick="openCase('leg')">25 ⭐</button>
+      </div>
+    </div> 
         <h3 style="font-size:17px;margin:16px 0 10px">🎭 Образы Лисёнка</h3>
     <div id="shop-skins" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
 
