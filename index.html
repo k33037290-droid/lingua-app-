@@ -220,8 +220,40 @@ function rTiles(q){var sl=document.getElementById('bslots');var pl=document.getE
 function chkBuild(){var q=cc.ls[cl].qs[qi];var res=[];for(var i=0;i<pt.length;i++)res.push(q.w[pt[i]]);document.getElementById('bchk').style.display='none';if(res.join(' ')===q.ans.join(' ')){xp+=20;spk();fb(true,'Идеально! +20 XP');}else{hp=Math.max(0,hp-1);fb(false,'Правильно: '+q.ans.join(' '));}document.getElementById('hxp').innerText=xp;document.getElementById('rxp').innerText=xp+' XP';document.getElementById('hhp').innerText=hp;}
 function nxt(){qi++;if(qi<cc.ls[cl].qs.length)rQ();else{done[cc.id+'_'+cl]=true;xp+=30;document.getElementById('hxp').innerText=xp;alert('🎉 Урок пройден! +30 XP! Открыт следующий этап.');goPath();}}
 function spk(){if(cc&&'speechSynthesis' in window){var u=new SpeechSynthesisUtterance(cc.ls[cl].qs[qi].s);u.lang='en-US';speechSynthesis.speak(u);}}
-function tab(t,el){var bs=document.querySelectorAll('.nbtn');for(var i=0;i<bs.length;i++)bs[i].classList.remove('act');el.classList.add('act');if(t==='courses')goCourses();else show('s-'+t);}
-function buy(it){var u=(it==='vip')?('https://'+'t.me/$ElaWUcXSCEjkFgAANpAt_vj4fGQ'):('https://'+'t.me/$_nXN6cXSCEjlFgAApjf9EBrY0v4');if(tg&&tg.openTelegramLink)tg.openTelegramLink(u);else window.location.href=u;}
+function tab(t,el){var bs=document.querySelectorAll('.nbtn');for(var i=0;i<bs.length;i++)bs[i].classList.remove('act');el.classList.add('act');if(t==='courses')goCourses();else show('s-'+t);}  
+  if(localStorage.getItem('foxy_vip')==='1'){
+  vip=true;
+  document.getElementById('hhp').innerText='♾️';
+}
+
+function buy(it){
+  var u=(it==='vip')
+    ? ('https://'+'t.me/$ElaWUcXSCEjkFgAANpAt_vj4fGQ')
+    : ('https://'+'t.me/$_nXN6cXSCEjlFgAApjf9EBrY0v4');
+
+  if(tg&&tg.openInvoice){
+    tg.openInvoice(u,function(status){
+      if(status==='paid'){
+        if(it==='vip'){
+          vip=true;
+          localStorage.setItem('foxy_vip','1');
+          document.getElementById('hhp').innerText='♾️';
+          alert('👑 Оплата прошла! Super VIP активирован — все разделы и бесконечные жизни открыты!');
+          goCourses();
+        }else{
+          hp=5;
+          document.getElementById('hhp').innerText=hp;
+          alert('❄️ Заморозка активирована и жизни восстановлены!');
+        }
+      }
+    });
+  }else if(tg&&tg.openTelegramLink){
+    tg.openTelegramLink(u);
+  }else{
+    window.location.href=u;
+  }
+}
+
 </script>
 </body>
 </html>
