@@ -705,6 +705,13 @@ if(tg&&tg.CloudStorage){
 }
 var _origTab=tab;
 tab=function(t,el){_origTab(t,el);if(t==='league')showTop(10);};
+  setInterval(function(){
+  var g=parseInt(localStorage.getItem('fx_gems')||'0',10);
+  if(xp>0&&xp!==g){localStorage.setItem('fx_gems',String(xp));if(tg&&tg.CloudStorage)tg.CloudStorage.setItem('fx_gems',String(xp));}
+  else if(xp===0&&g>0){xp=g;updTop();}
+  updWalletMini();
+},600);
+
 updWalletMini();showTop(10);
   function fixGemTxt(s){return typeof s==='string'?s.replace(/⚡\ufe0f?/g,'💎').replace(/\bXP\b/gi,'Кристаллов'):s;}
 var _origAlert=window.alert;
