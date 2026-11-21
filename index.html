@@ -54,6 +54,7 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
 <body>
 <div class="top">
   <div><span class="lvl" id="hlvl">A1</span></div>
+  <div style="color:#38bdf8;cursor:pointer" onclick="tab('shop',document.querySelectorAll('.nbtn'))">⭐ <span id="hstars">0</span></div>
   <div style="color:#ff9600">🍖 <span id="hfull">100</span>%</div>
   <div style="color:#ffc800">⚡ <span id="hxp">0</span></div>
   <div style="color:#ff4b4b">❤️ <span id="hhp">5</span></div>
@@ -94,6 +95,16 @@ body{background:#131f24;color:#fff;display:flex;flex-direction:column;height:100
   </div>
   <div id="s-shop" class="scr">
     <h2 style="font-size:20px;margin-bottom:14px">🛒 Магазин Super Foxy</h2>
+        <div class="card" style="border-color:#38bdf8">
+      <div style="font-weight:800;margin-bottom:8px">⭐ Пополнить баланс звёзд (На счету: <span id="sstars">0</span> ⭐)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button type="button" class="sbtn" style="background:#38bdf8" onclick="topUp(25)">+25 ⭐</button>
+        <button type="button" class="sbtn" style="background:#38bdf8" onclick="topUp(50)">+50 ⭐</button>
+        <button type="button" class="sbtn" style="background:#38bdf8" onclick="topUp(100)">+100 ⭐</button>
+        <button type="button" class="sbtn" style="background:#38bdf8" onclick="topUp(250)">+250 ⭐</button>
+      </div>
+    </div>
+
     <div class="card" style="border-color:#ffc800;display:flex;justify-content:space-between;align-items:center;gap:10px">
       <div><b>👑 Super VIP (Все модули)</b><br><small style="color:#afafaf">Открывает все модули + бесконечные жизни ❤️ и еда 🍖</small></div>
       <button type="button" class="sbtn" onclick="buy('vip')">50 ⭐️</button>
@@ -277,13 +288,37 @@ function nxt(){
 }
 function spk(){if('speechSynthesis' in window){var u=new SpeechSynthesisUtterance(UNITS[cu].steps[cs].qs[qi].s);u.lang='en-US';speechSynthesis.speak(u);}}
 function tab(t,el){var bs=document.querySelectorAll('.nbtn');for(var i=0;i<bs.length;i++)bs[i].classList.remove('act');el.classList.add('act');if(t==='path')goChain();else show('s-'+t);}
-function buy(it){
-  var u='https://t.me';
-  if(it!=='vip')u='https://t.me';
-  if(tg&&tg.openInvoice){tg.openInvoice(u,function(st){if(st==='paid'){if(it==='vip'){vip=true;updTop();save();alert('👑 Super VIP активирован!');goChain();}else{frz+=1;hp=5;updTop();save();alert('❄️ Заморозка куплена!');}}});}
-  else if(tg&&tg.openTelegramLink)tg.openTelegramLink(u);
+var stars=0;
+var SLUGS={
+  25:'https://t.me/$AXEIHMXSCEgNGAAA-QtHj9NLseU',
+  50:'https://t.me/$B_kc-8XSCEgOGAAAfxsDO8eOo40',
+  100:'https://t.me/$AHPhCMXSCEgPGAAAyxOkjmH_F8A',
+  250:'https://t.me/$KHUp-cXSCEgQGAAAFMllqAfzVOg'
+};
+function topUp(amt){
+  var u='https://t.me[amt];
+  if(tg&&tg.openInvoice){
+    tg.openInvoice(u,function(st){
+      if(st==='paid'){stars+=amt;syncStars();alert('✅ Начислено +'+amt+' ⭐!');}
+    });
+  }else if(tg&&tg.openTelegramLink)tg.openTelegramLink(u);
   else window.location.href=u;
 }
+function syncStars(){
+  localStorage.setItem('fx_stars',stars);
+  if(document.getElementById('hstars'))document.getElementById('hstars').innerText=stars;
+  if(document.getElementById('sstars'))document.getElementById('sstars').innerText=stars;
+}
+stars=parseInt(localStorage.getItem('fx_stars')||'0',10);
+syncStars();
+function buy(it){
+  var cost=(it==='vip')?50:15;
+  if(stars<cost){alert('Недостаточно звёзд! Нужно '+cost+' ⭐. Пополни баланс выше.');return;}
+  stars-=cost;syncStars();
+  if(it==='vip'){vip=true;updTop();save();alert('👑 Super VIP активирован!');goChain();}
+  else{frz+=1;hp=5;updTop();save();alert('❄️ Заморозка + 5 жизней куплены!');}
+}
+
 try{load(localStorage.getItem('fx_v2'));}catch(e){}
 if(tg&&tg.CloudStorage)tg.CloudStorage.getItem('fx_v2',function(err,val){if(!err&&val)load(val);});
 </script>
