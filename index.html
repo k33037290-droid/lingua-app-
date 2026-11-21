@@ -397,11 +397,23 @@
     }
         function payStars(cnt,url){
       var LINKS={
-        25:'https://t.me/$AXEIHMXSCEgNGAAA-QtHj9NLseU',
-        50:'https://t.me/$B_kc-8XSCEgOGAAAfxsDO8eOo40',
-        100:'https://t.me/$AHPhCMXSCEgPGAAAyxOkjmH_F8A',
-        250:'https://t.me/$KHUp-cXSCEgQGAAAFMllqAfzVOg'
+        25:'https://t.me',
+        50:'https://t.me',
+        100:'https://t.me',
+        250:'https://t.me'
       };
+      var link=LINKS[cnt]||url;
+      if(tg&&tg.openInvoice){
+        tg.openInvoice(link,function(status){
+          if(status==='paid'){
+            st.stars+=cnt;save();renderAll();
+            alert('🎉 Оплата прошла! Начислено +'+cnt+' ⭐!');
+          }
+        });
+      }else{
+        window.open(link,'_blank');
+      }
+        }
       var link=LINKS[cnt]||url;
       if(tg&&tg.openTelegramLink){
         tg.openTelegramLink(link);
