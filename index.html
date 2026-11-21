@@ -689,7 +689,8 @@
         250:'https://t.me/$KHUp-cXSCEgQGAAAFMllqAfzVOg'
       };
       var slug=SLUGS[cnt];if(!slug)return;
-      var url='https://t.me\x24'+slug;
+      var url=slug;
+
       if(tg&&tg.openInvoice){
         tg.openInvoice(url,function(status){
           if(status==='paid'){st.stars+=cnt;save();renderAll();alert('🎉 Начислено +'+cnt+' ⭐!');}
