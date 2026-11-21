@@ -160,6 +160,8 @@ function updTop(){
   document.getElementById('hhp').innerText=vip?'♾️':hp;
   document.getElementById('hfull').innerText=vip?'100':full;
   document.getElementById('hfood').innerText=vip?'♾️':food;
+  if(document.getElementById('ifood'))document.getElementById('ifood').innerText=vip?'♾️':(food+' шт.');
+if(document.getElementById('ifrz'))document.getElementById('ifrz').innerText=frz+' шт.';
   var fm=document.getElementById('fox-mood'),fs=document.getElementById('fox-stat');
   if(vip||full>=80){fm.innerText='🦊';fs.innerText='Фокси сыт (+50% XP бонус!)';}
   else if(full>=30){fm.innerText='🦊';fs.innerText='Фокси в норме (корми для +50% XP)';}
